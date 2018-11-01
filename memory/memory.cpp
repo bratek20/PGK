@@ -13,7 +13,7 @@ GLFWwindow* window;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <common/shader.hpp>
+#include "shader.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -33,11 +33,11 @@ void onKeyClicked(GLFWwindow* , int key, int , int action, int)
 {
     if (key >= 0 && key < 1024)
     {
-        bool firstPressed = !isKeyPressed[key] && action == GLFW_PRESS;
+        bool firstPressed = !isKeyPressed[key] && action == GLFW_PRESS; 
         if (action == GLFW_PRESS)
         {
             isKeyPressed[key] = true;
-        }
+        } 
         else if (action == GLFW_RELEASE)
         {
             isKeyPressed[key] = false;
@@ -76,8 +76,7 @@ bool initWindow()
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLEW
-	glewExperimental = true; // Needed for core profilefile:///home/i291481/Pobrane/memory/memory.vs
-
+	glewExperimental = true; // Needed for core profile
 	if (glewInit() != GLEW_OK) {
 		fprintf(stderr, "Failed to initialize GLEW\n");
 		getchar();
@@ -105,7 +104,6 @@ GLuint scaleId;
 GLuint colorId;
 GLuint timeId;
 GLuint timeScaleImpactId;
-
 
 struct DrawObject
 {
@@ -273,14 +271,14 @@ struct Card
         {
             setColor(BACK_COLOR);
             cardBackground.draw();
-        }
+        }	
     }
 };
 const Color Card::FRAME_COLOR = GREY;
 const Color Card::SIGN_COLOR = BLACK;
 const Color Card::BACK_COLOR = BROWN;
 
-struct Board
+struct Board 
 {
     vector<vector<Card>> cards;
     int i;
@@ -328,7 +326,7 @@ struct Board
                 addToJ(1);
             }
             addToI(di);
-        }
+        }      
         cards[i][j].setSelection(true);
     }
 
@@ -345,7 +343,7 @@ struct Board
                 addToI(1);
             }
             addToJ(dj);
-        }
+        }      
         cards[i][j].setSelection(true);
     }
 
@@ -446,13 +444,13 @@ void initDrawData()
 
 	glEnableVertexAttribArray(0);
     glVertexAttribPointer(
-        0,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (void*)0
-    );
+        0,                  
+        2,                  
+        GL_FLOAT,           
+        GL_FALSE,          
+        0,                  
+        (void*)0            
+    );  
 }
 
 void clearDrawData()
@@ -498,20 +496,20 @@ vector<vector<Card>> createBoardCards(int rows, int columns, int colorsNumber)
         requiredCards-=2;
     }
     random_shuffle(cardsToChoose.begin(), cardsToChoose.end());
-
+    
     vector<vector<Card>> boardCards(rows, vector<Card>(columns));
     float shiftX = 2.0f / (1 + columns);
     float shiftY = 2.0f / (1 + rows);
     pair<float,float> scale = {1.0f/(1+columns), 1.0f/(1+rows)};
 
-    float y = -1.0f;
+    float y = -1.0f; 
     for(auto& row : boardCards)
     {
         y += shiftY;
         float x = -1.0f;
         for(auto& card : row)
         {
-            x += shiftX;
+            x += shiftX; 
             card = cardsToChoose.back();
             card.setTranslation({x,y});
             card.setScale(scale);
@@ -563,7 +561,7 @@ int main(int argc, char* argv[])
 	do
     {
         glUniform1f(timeId, time);
-
+		
         glClear( GL_COLOR_BUFFER_BIT );
 
         board.draw();
