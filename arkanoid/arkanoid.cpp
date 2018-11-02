@@ -1,15 +1,11 @@
-// Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
 
-// Include GLEW
 #include <GL/glew.h>
 
-// Include GLFW
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
 
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -24,6 +20,8 @@ GLFWwindow* window;
 #include "Actor.h"
 #include "Mesh.h"
 #include "Shapes.h"
+#include "Globals.h"
+#include "Ball.h"
 
 using namespace std;
 
@@ -82,7 +80,7 @@ bool initWindow()
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLEW
-	glewExperimental = true; // Needed for core profilefile:///home/i291481/Pobrane/memory/memory.vs
+	glewExperimental = true; // Needed for core profile
 
 	if (glewInit() != GLEW_OK) {
 		fprintf(stderr, "Failed to initialize GLEW\n");
@@ -117,20 +115,29 @@ int main()
 
     Mesh::init();
     ActorPtr world = Actor::create(nullptr); 
-	world->setScale(0.1f, 0.1f);
-	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE));
-	world->addChild(Actor::create(Mesh::create(Mesh::RIGHT, Mesh::GREEN)));
+	BallPtr ball = Ball::create(0.0f, 1.0f);
 
+	world->setScale(0.1f, 0.1f);
+	world->addChild(ball);
+	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE));
+
+	Globals::currentFrameTime = glfwGetTime();
+	Globals::deltaTime = 1.0f / 60.0f; 
+	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
+	
 	do
     {
-        glClear( GL_COLOR_BUFFER_BIT );
-
 		world->update();
-        world->render(glm::mat3(1.0f));
 
+        glClear( GL_COLOR_BUFFER_BIT );
+        world->render(glm::mat3(1.0f));
 		glfwSwapBuffers(window);
+
 		glfwPollEvents();
 
+		Globals::previousFrameTime = Globals::currentFrameTime;
+		Globals::currentFrameTime = glfwGetTime();
+		Globals::deltaTime = Globals::currentFrameTime - Globals::previousFrameTime; 
 	}
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 		   glfwWindowShouldClose(window) == 0 );

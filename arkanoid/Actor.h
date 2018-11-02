@@ -19,6 +19,7 @@ class Actor {
 
 public:
     static ActorPtr create(MeshPtr mesh);
+    virtual ~Actor(){}
 
     void update();
     void render(const glm::mat3& worldMat);
@@ -27,22 +28,22 @@ public:
     void addChilds(std::vector<ActorPtr> childs);
 
     void setPosition(float x, float y);
-    void move(float dx, float dy);
+    void move(glm::vec2 dPos);
     void setScale(float scaleX, float scaleY);
     void setRotation(float rotation);
 
     float getScaleX() const;
     float getScaleY() const;
     
-private:
-    Actor();
+protected:
+    Actor(MeshPtr mesh);
+    virtual void onUpdate() {};
 
+private:
     glm::mat3 getLocalMat();
     glm::mat3 getPositionMat();
     glm::mat3 getScaleMat();
     glm::mat3 getRotationMat();
-    
-    
 };
 
 #endif

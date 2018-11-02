@@ -3,12 +3,11 @@
 #include <iostream>
 using namespace std;
 
-Actor::Actor() : position(0.0f, 0.0f), scale(1.0f, 1.0f), rotation(0.0f) {
+Actor::Actor(MeshPtr mesh) : position(0.0f, 0.0f), scale(1.0f, 1.0f), rotation(0.0f), mesh(mesh) {
 }
 
 ActorPtr Actor::create(MeshPtr mesh){
-    auto actor = ActorPtr(new Actor());
-    actor->mesh = mesh;
+    auto actor = ActorPtr(new Actor(mesh));
     return actor;
 }
 
@@ -16,6 +15,8 @@ void Actor::update(){
     for(auto& c : childs){
         c->update();
     }
+
+    onUpdate();
 }
 
 void Actor::render(const glm::mat3& worldMat){
@@ -45,8 +46,8 @@ void Actor::setPosition(float x, float y){
     position = glm::vec2(x, y);
 }
 
-void Actor::move(float dx, float dy){
-    position += glm::vec2(dx, dy);
+void Actor::move(glm::vec2 dPos){
+    position += dPos;
 }
 
 void Actor::setScale(float scaleX, float scaleY){
