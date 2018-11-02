@@ -6,29 +6,64 @@ using namespace std;
 Actor::Actor() : position(0.0f, 0.0f), scale(1.0f, 1.0f), rotation(0.0f) {
 }
 
-void Actor::render(){
-    mesh.render(getWorldMat()); 
+ActorPtr Actor::create(MeshPtr mesh){
+    auto actor = ActorPtr(new Actor());
+    actor->mesh = mesh;
+    return actor;
 }
 
-glm::mat3 Actor::getWorldMat(){
+void Actor::update(){
+    for(auto& c : childs){
+        c->update();
+    }
+}
+
+void Actor::render(const glm::mat3& worldMat){
+    auto myWorldMat = worldMat * getLocalMat();
+    if(mesh != nullptr){
+        mesh->render(myWorldMat);
+    }
+
+    for(auto& c : childs){
+        c->render(myWorldMat);
+    }
+}
+
+void Actor::addChild(ActorPtr child){
+    childs.push_back(child);
+}
+
+void Actor::addChilds(std::vector<ActorPtr> childs){
+    this->childs.insert(this->childs.end(), childs.begin(), childs.end());
+}
+
+glm::mat3 Actor::getLocalMat(){
     return getPositionMat() * getRotationMat() * getScaleMat();
 }
 
-void Actor::setPosition(glm::vec2 position){
-    this->position = position;
-}
-
 void Actor::setPosition(float x, float y){
-    setPosition(glm::vec2(x, y));
-}
-
-void Actor::move(glm::vec2 deltaPos){
-    position += deltaPos;
+    position = glm::vec2(x, y);
 }
 
 void Actor::move(float dx, float dy){
-    move(glm::vec2(dx, dy));
+    position += glm::vec2(dx, dy);
 }
+
+void Actor::setScale(float scaleX, float scaleY){
+    scale = glm::vec2(scaleX, scaleY);
+}
+
+void Actor::setRotation(float rotation){
+    this->rotation = rotation;   
+}
+
+float Actor::getScaleX() const{
+    return scale.x;
+}
+
+float Actor::getScaleY() const{
+    return scale.y;
+};
 
 glm::mat3 Actor::getPositionMat(){
     glm::mat4 positionMat(1.0f);

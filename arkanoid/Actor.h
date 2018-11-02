@@ -3,26 +3,41 @@
 
 #include <glm/glm.hpp>
 #include "Mesh.h"
+#include <vector>
+#include <memory>
+
+class Actor;
+using ActorPtr = std::shared_ptr<Actor>;
 
 class Actor {
+    int id;
     glm::vec2 position;
     glm::vec2 scale;
     float rotation;
-    Mesh mesh;
+    MeshPtr mesh;    
+    std::vector<ActorPtr> childs;
 
 public:
-    Actor(); 
+    static ActorPtr create(MeshPtr mesh);
+
     void update();
-    void render();
+    void render(const glm::mat3& worldMat);
 
-    void setPosition(glm::vec2 position);
+    void addChild(ActorPtr child);
+    void addChilds(std::vector<ActorPtr> childs);
+
     void setPosition(float x, float y);
-    void move(glm::vec2 deltaPos);
     void move(float dx, float dy);
+    void setScale(float scaleX, float scaleY);
+    void setRotation(float rotation);
 
-    glm::mat3 getWorldMat();
+    float getScaleX() const;
+    float getScaleY() const;
     
 private:
+    Actor();
+
+    glm::mat3 getLocalMat();
     glm::mat3 getPositionMat();
     glm::mat3 getScaleMat();
     glm::mat3 getRotationMat();

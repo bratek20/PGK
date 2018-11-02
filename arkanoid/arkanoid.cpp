@@ -23,6 +23,7 @@ GLFWwindow* window;
 
 #include "Actor.h"
 #include "Mesh.h"
+#include "Shapes.h"
 
 using namespace std;
 
@@ -115,13 +116,17 @@ int main()
     }
 
     Mesh::init();
-    Actor a1;
+    ActorPtr world = Actor::create(nullptr); 
+	world->setScale(0.1f, 0.1f);
+	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE));
+	world->addChild(Actor::create(Mesh::create(Mesh::RIGHT, Mesh::GREEN)));
 
 	do
     {
         glClear( GL_COLOR_BUFFER_BIT );
 
-        a1.render();
+		world->update();
+        world->render(glm::mat3(1.0f));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
