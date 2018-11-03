@@ -107,3 +107,19 @@ void Mesh::render(const glm::mat3& worldMat){
     );
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
+
+std::vector<glm::vec2> Mesh::getLocalCoords() const{
+    std::vector<glm::vec2> localCoords;
+    for(int i=0;i<3;i++){
+        localCoords.push_back(glm::vec2(vertexData[6*shapeOff + 2*i], vertexData[6*shapeOff + 2*i+1]));
+    }
+    return localCoords;
+}
+
+std::vector<glm::vec2> Mesh::getWorldCoords(const glm::mat3& worldMat) const{
+    std::vector<glm::vec2> globalCoords;
+    for(auto& localCoord : getLocalCoords()){
+        globalCoords.push_back(worldMat * glm::vec3(localCoord, 1.0f));
+    }
+    return globalCoords;
+}

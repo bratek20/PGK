@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include <vector>
 
 class Mesh;
 using MeshPtr = std::shared_ptr<Mesh>;
@@ -36,6 +37,8 @@ public:
     static void clear();
 
     void render(const glm::mat3& worldMat);
+    std::vector<glm::vec2> getLocalCoords() const;
+    std::vector<glm::vec2> getWorldCoords(const glm::mat3& worldMat) const;
 
 private:
     Mesh(){}

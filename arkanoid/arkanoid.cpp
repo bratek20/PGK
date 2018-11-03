@@ -98,13 +98,15 @@ bool initWindow()
     return true;
 }
 
-// void initInputHandlers(Actor& actor)
-// {
-//     setCallback(GLFW_KEY_UP, bind(&Actor::move, ref(actor), 0.0f, -0.1f));
-//     setCallback(GLFW_KEY_DOWN, bind(&Actor::move, ref(actor), 0.0f, 0.1f));
-//     setCallback(GLFW_KEY_LEFT, bind(&Actor::move, ref(actor), -0.1f, 0.0f));
-//     setCallback(GLFW_KEY_RIGHT, bind(&Actor::move, ref(actor), 0.1f, 0.0f));
-// }
+void initInputHandlers(BallPtr ball, ActorPtr world)
+{
+    // setCallback(GLFW_KEY_UP, [=](){
+	// 	world->update();
+	// });
+    //setCallback(GLFW_KEY_DOWN, bind(&Actor::move, ref(actor), 0.0f, 0.1f));
+    //setCallback(GLFW_KEY_LEFT, bind(&Actor::move, ref(actor), -0.1f, 0.0f));
+    //setCallback(GLFW_KEY_RIGHT, bind(&Actor::move, ref(actor), 0.1f, 0.0f));
+}
 
 int main()
 {
@@ -115,7 +117,8 @@ int main()
 
     Mesh::init();
     ActorPtr world = Actor::create(nullptr); 
-	BallPtr ball = Ball::create(0.0f, 1.0f);
+	BallPtr ball = Ball::create(7.0f, 8.0f);
+	Globals::ball = ball;
 
 	world->setScale(0.1f, 0.1f);
 	world->addChild(ball);
@@ -124,7 +127,6 @@ int main()
 	Globals::currentFrameTime = glfwGetTime();
 	Globals::deltaTime = 1.0f / 60.0f; 
 	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
-	
 	do
     {
 		world->update();

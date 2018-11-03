@@ -11,12 +11,13 @@ class Ball : public Actor {
 
 public:
     static BallPtr create(float xVelocity, float yVelocity);
-
+    void setVelocity(glm::vec2 velocity);
+    glm::vec2 getVelocity() const;
+    
 protected:
+    Ball(MeshPtr mesh);
     void onUpdate() override;
 
-private:
-    Ball(MeshPtr mesh);
 };
 
 #endif
