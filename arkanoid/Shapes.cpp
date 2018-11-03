@@ -29,3 +29,15 @@ ActorPtr Shapes::createWorldFrame(float worldScaleX, float worldScaleY, Mesh::Co
     frame->addChilds({left, right, bottom, top});      
     return frame;
 }
+
+ActorPtr Shapes::createPlatform(float x, float y, float scaleX, float scaleY, Mesh::Color color){
+    auto platform = Actor::create(nullptr);
+    auto left = createRectangle(-1, 0, 1, 1, 30.0f, color);
+    auto center = createRectangle(0, 0.0f, 1.0f, 1.0f, 0.0f, color);
+    auto right = createRectangle(1, 0, 1, 1, -30.0f, color);
+
+    platform->addChilds({left, center, right});
+    platform->setPosition(x, y);
+    platform->setScale(scaleX, scaleY);
+    return platform;
+}

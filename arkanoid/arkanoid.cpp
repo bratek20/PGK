@@ -26,17 +26,10 @@ GLFWwindow* window;
 using namespace std;
 
 bool isKeyPressed[1024];
-function<void()> callbacks[1024];
-void setCallback(int key, function<void()> callback)
-{
-    callbacks[key] = callback;
-}
-
 void onKeyClicked(GLFWwindow* , int key, int , int action, int)
 {
     if (key >= 0 && key < 1024)
     {
-        bool firstPressed = !isKeyPressed[key] && action == GLFW_PRESS;
         if (action == GLFW_PRESS)
         {
             isKeyPressed[key] = true;
@@ -44,11 +37,6 @@ void onKeyClicked(GLFWwindow* , int key, int , int action, int)
         else if (action == GLFW_RELEASE)
         {
             isKeyPressed[key] = false;
-        }
-        firstPressed = true;
-        if(firstPressed && callbacks[key])
-        {
-            callbacks[key]();
         }
     }
 }
@@ -98,14 +86,23 @@ bool initWindow()
     return true;
 }
 
-void initInputHandlers(BallPtr ball, ActorPtr world)
+bool isRunning = true;
+void handleInput(ActorPtr platform)
 {
-    // setCallback(GLFW_KEY_UP, [=](){
-	// 	world->update();
-	// });
-    //setCallback(GLFW_KEY_DOWN, bind(&Actor::move, ref(actor), 0.0f, 0.1f));
-    //setCallback(GLFW_KEY_LEFT, bind(&Actor::move, ref(actor), -0.1f, 0.0f));
-    //setCallback(GLFW_KEY_RIGHT, bind(&Actor::move, ref(actor), 0.1f, 0.0f));
+    if(isKeyPressed[GLFW_KEY_SPACE])
+	{
+		isRunning = !isRunning;
+	}
+
+	static const int verticalShift = 15;
+	if(isKeyPressed[GLFW_KEY_LEFT])
+	{
+		platform->move(glm::vec2(-verticalShift,0) * Globals::deltaTime);
+	}
+	if(isKeyPressed[GLFW_KEY_RIGHT])
+	{
+		platform->move(glm::vec2(verticalShift,0) * Globals::deltaTime);
+	}
 }
 
 int main()
@@ -118,18 +115,25 @@ int main()
     Mesh::init();
     ActorPtr world = Actor::create(nullptr); 
 	BallPtr ball = Ball::create(7.0f, 8.0f);
+	ActorPtr platform = Shapes::createPlatform(0, -15, 2, 1, Mesh::GREEN);
 	Globals::ball = ball;
 
-	world->setScale(0.1f, 0.1f);
+	world->setScale(0.05f, 0.05f);
 	world->addChild(ball);
 	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE));
+	world->addChild(platform);
 
 	Globals::currentFrameTime = glfwGetTime();
 	Globals::deltaTime = 1.0f / 60.0f; 
 	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
 	do
     {
-		world->update();
+		handleInput(platform);
+
+		if(isRunning)
+		{
+			world->update();
+		}
 
         glClear( GL_COLOR_BUFFER_BIT );
         world->render(glm::mat3(1.0f));
