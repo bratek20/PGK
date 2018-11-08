@@ -41,7 +41,11 @@ public:
     static const Color BLUE;
     static const Color RAINBOW_HEX;
     static const Color WHITE_HEX;
-    
+    static const Color BRICK;
+    static const Color GRAY;
+    static const Color BRICK2;
+    static const Color BRICK3;
+
     static MeshPtr create(Shape shape, Color color);
 
     static void init(); 

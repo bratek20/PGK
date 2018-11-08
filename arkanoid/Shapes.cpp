@@ -22,7 +22,9 @@ ActorPtr Shapes::createSubHexagon(float x, float y, float scaleX, float scaleY, 
     centerTri->rotate(180.0f);
     centerTri->setPosition(0, Mesh::EQ_TRI_H/3);
     leftTri->setPosition(-0.5f, 0.0f);
+    leftTri->setRotation(120.0f);
     rightTri->setPosition(0.5f, 0.0f);
+    rightTri->setRotation(240.0f);
     subHexagon->addChilds({leftTri, centerTri, rightTri});
 
     subHexagon->setPosition(x, y);

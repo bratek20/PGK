@@ -55,13 +55,34 @@ const std::vector<GLfloat> Mesh::colorData = {
     1.0f, 1.0f, 1.0f,
     1.0f, 1.0f, 1.0f,
     1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f
+    1.0f, 1.0f, 1.0f,
+
+    1.0f, 0.5f, 0.4f,
+    1.0f, 0.5f, 0.4f,
+    1.0f, 0.9f, 0.8f,
+
+    0.75f, 0.75f, 0.75f,
+    0.75f, 0.75f, 0.75f,
+    0.75f, 0.75f, 0.75f,
+
+    0.5f, 1.0f, 0.0f,
+    0.5f, 1.0f, 0.0f,
+    0.9f, 1.0f, 0.0f,
+
+    0.2f, 1.0f, 0.9f,
+    0.2f, 1.0f, 0.9f,
+    0.2f, 0.5f, 0.9f,
+
 };
 const Mesh::Color Mesh::RED = 0;
 const Mesh::Color Mesh::GREEN = 9;
 const Mesh::Color Mesh::BLUE = 18;
 const Mesh::Color Mesh::RAINBOW_HEX = 27;
 const Mesh::Color Mesh::WHITE_HEX = 45;
+const Mesh::Color Mesh::BRICK = 63;
+const Mesh::Color Mesh::GRAY = 72;
+const Mesh::Color Mesh::BRICK2 = 81;
+const Mesh::Color Mesh::BRICK3 = 90;
 // constexpr Color WHITE = {1.0f, 1.0f, 1.0f};
 // constexpr Color BLACK = {0.0f, 0.0f, 0.0f};
 // constexpr Color GREY = {0.75f, 0.75f, 0.75f};

@@ -126,19 +126,33 @@ void createWorld(){
 	ball->setPosition(0, -6);
 
 	Globals::ball = ball;
-	platform = Shapes::createPlatform(0, -7, 2, 1, Mesh::GREEN);
+	platform = Shapes::createPlatform(0, -7, 1.5f, 0.5f, Mesh::GREEN);
 
 	world->setScale(0.1f, 0.1f);
 	world->addChild(Shapes::createBackground());
 	world->addChild(ball);
-	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE, restartGame));
+	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::GRAY, restartGame));
 
 	world->addChild(platform);
 
 	obstacles = Actor::create(nullptr);
-	obstacles->addChild(Obstacle::create(-5, 0));
-	obstacles->addChild(Obstacle::create(5, 0));
+	obstacles->addChild(Obstacle::create(-5, 0, false));
+	obstacles->addChild(Obstacle::create(5, 0, false));
+
+	auto staticObstacles = Obstacle::create(0, 0, true);
+	int columns = 7;
+	int rows = 2;
+	for(int i = 0; i < rows; i++){
+		float y = (i-rows/2) * 1.5f + 8;
+		for(int j=0; j<columns;j++){
+			float x = (j-columns/2) * 2;
+			auto c = Shapes::createHexagon(x, y, 0.8, 0.6f, 0, i==0 ? Mesh::BRICK2 : Mesh::BRICK3);
+			c->setOnCollide([](ActorPtr a){a->destroy();});
+			staticObstacles->addChild(c);
+		}
+	}
 	
+	obstacles->addChild(staticObstacles);
 	world->addChild(obstacles);
 }
 
@@ -153,6 +167,7 @@ int main(){
 	Globals::currentFrameTime = glfwGetTime();
 	Globals::deltaTime = 1.0f / 60.0f; 
 	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
+	
 	do{
 		if(restart){
 			createWorld();
@@ -163,9 +178,12 @@ int main(){
 		if(isRunning){		
 			world->update();
 		}
-		
+
 		if(obstacles->childsNum() == 1){
 			world->setRotation(180.0f);
+		}
+		if(obstacles->childsNum() == 0){
+			restartGame();
 		}
 
         glClear( GL_COLOR_BUFFER_BIT );
