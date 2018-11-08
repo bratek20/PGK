@@ -7,6 +7,7 @@ BallPtr Ball::create(float xVelocity, float yVelocity){
     auto mesh = Mesh::create(Mesh::EQUILATERAL, Mesh::RED);
     auto ball = BallPtr(new Ball(mesh));
     ball->setVelocity({xVelocity, yVelocity});
+    ball->setScale(0.42f, 0.42f);
     return ball; 
 }
 

@@ -10,26 +10,37 @@ class Mesh;
 using MeshPtr = std::shared_ptr<Mesh>;
 
 class Mesh {
+    struct Shape{
+        int off;
+        int size;
+        int type;
+    };
+
     static GLuint worldMatId;
     static GLuint programId;
     static GLuint vertexArrayIdx;
     static GLuint vertexBufferIdx;
     static GLuint colorBufferIdx;
-    static const GLfloat vertexData[6 * 2];
-    static const GLfloat colorData[9 * 3];
+    static const std::vector<GLfloat> vertexData;
+    static const std::vector<GLfloat> colorData;
 
-    int shapeOff;
+    Shape shape;
     int colorOff;
 
 public:
-    using Shape = int;
+    static const float EQ_TRI_H;
+
     static const Shape EQUILATERAL;
     static const Shape RIGHT;
+    static const Shape HEXAGON;
+    static const Shape HEXAGON_LINES;
 
     using Color = int;
     static const Color RED;
     static const Color GREEN;
     static const Color BLUE;
+    static const Color RAINBOW_HEX;
+    static const Color WHITE_HEX;
     
     static MeshPtr create(Shape shape, Color color);
 

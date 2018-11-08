@@ -22,6 +22,7 @@ GLFWwindow* window;
 #include "Shapes.h"
 #include "Globals.h"
 #include "Ball.h"
+#include "Obstacle.h"
 
 using namespace std;
 
@@ -81,7 +82,7 @@ bool initWindow()
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetKeyCallback(window, onKeyClicked);
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.7f, 0.7f, 0.7f, 0.0f);
 
     return true;
 }
@@ -105,34 +106,66 @@ void handleInput(ActorPtr platform)
 	}
 }
 
-int main()
-{
-    if(!initWindow())
-    {
+ActorPtr world;
+BallPtr ball;
+ActorPtr platform;
+ActorPtr obstacles;
+
+bool restart = false;
+void restartGame(){
+	cout << "Restarting game..." << endl;
+	restart = true;
+}
+
+void createWorld(){
+	restart = false;
+	isRunning = false;
+
+	world = Actor::create(nullptr); 
+	ball = Ball::create(3, 8);
+	ball->setPosition(0, -6);
+
+	Globals::ball = ball;
+	platform = Shapes::createPlatform(0, -7, 2, 1, Mesh::GREEN);
+
+	world->setScale(0.1f, 0.1f);
+	world->addChild(Shapes::createBackground());
+	world->addChild(ball);
+	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE, restartGame));
+
+	world->addChild(platform);
+
+	obstacles = Actor::create(nullptr);
+	obstacles->addChild(Obstacle::create(-5, 0));
+	obstacles->addChild(Obstacle::create(5, 0));
+	
+	world->addChild(obstacles);
+}
+
+int main(){
+    if(!initWindow()){
         return -1;
     }
 
     Mesh::init();
-    ActorPtr world = Actor::create(nullptr); 
-	BallPtr ball = Ball::create(7.0f, 8.0f);
-	ActorPtr platform = Shapes::createPlatform(0, -15, 2, 1, Mesh::GREEN);
-	Globals::ball = ball;
-
-	world->setScale(0.05f, 0.05f);
-	world->addChild(ball);
-	world->addChild(Shapes::createWorldFrame(world->getScaleX(), world->getScaleY(), Mesh::BLUE));
-	world->addChild(platform);
+    restartGame();
 
 	Globals::currentFrameTime = glfwGetTime();
 	Globals::deltaTime = 1.0f / 60.0f; 
 	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
-	do
-    {
+	do{
+		if(restart){
+			createWorld();
+		}
+
 		handleInput(platform);
 
-		if(isRunning)
-		{
+		if(isRunning){		
 			world->update();
+		}
+		
+		if(obstacles->childsNum() == 1){
+			world->setRotation(180.0f);
 		}
 
         glClear( GL_COLOR_BUFFER_BIT );

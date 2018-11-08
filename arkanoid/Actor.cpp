@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "Collider.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <algorithm>
 #include <iostream>
 using namespace std;
 
@@ -12,12 +13,20 @@ ActorPtr Actor::create(MeshPtr mesh){
     return actor;
 }
 
+void Actor::destroy(){
+    exists = false;
+}
+
 void Actor::update(){
     for(auto& c : childs){
         c->update();
     }
 
     onUpdate();
+
+    childs.erase(
+        std::remove_if(childs.begin(), childs.end(), [](ActorPtr a){return !a->exists;}),
+        childs.end());
 }
 
 void Actor::render(const glm::mat3& worldMat){
@@ -30,8 +39,10 @@ void Actor::render(const glm::mat3& worldMat){
         c->render(myWorldMat);
     }
 
-    if(mesh != nullptr){
-        Collider::collide(mesh->getWorldCoords(myWorldMat));
+    if(mesh != nullptr && collides){
+        if(Collider::collide(mesh->getWorldCoords(myWorldMat))){
+           onCollide();
+        }
     }
 }
 
@@ -46,6 +57,9 @@ void Actor::addChilds(std::vector<ActorPtr> childs){
     }
 }
 
+int Actor::childsNum() const{
+    return childs.size();
+}
 
 void Actor::setPosition(float x, float y){
     position = glm::vec2(x, y);
@@ -74,6 +88,24 @@ float Actor::getScaleX() const{
 float Actor::getScaleY() const{
     return scale.y;
 };
+
+void Actor::setOnCollide(std::function<void(ActorPtr)> onCollide){
+    onCollideCallback = onCollide;
+}
+
+void Actor::disableCollisions(){
+    collides = false;
+}
+
+
+void Actor::onCollide(){
+    if(onCollideCallback){
+        onCollideCallback(shared_from_this());
+    }
+    else if(!parent.expired()){
+        parent.lock()->onCollide();
+    }
+}
 
 glm::vec2 Actor::getWorldPosition() const{
     return getWorldMat() * glm::vec3(position, 1.0f);

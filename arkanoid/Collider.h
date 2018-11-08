@@ -7,7 +7,7 @@
 
 class Collider{
 public:
-    static void collide(const std::vector<glm::vec2>& coords);
+    static bool collide(const std::vector<glm::vec2>& coords);
 private:
     static float cross(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);
     static bool turnsLeft(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);

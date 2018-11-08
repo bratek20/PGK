@@ -5,12 +5,12 @@
 #include <algorithm>
 #include <iostream>
 
-void Collider::collide(const std::vector<glm::vec2>& coords){
+bool Collider::collide(const std::vector<glm::vec2>& coords){
     auto ball = Globals::ball;
     auto ballCoords = ball->getWorldCoords();
     auto it = std::find_if(ballCoords.begin(), ballCoords.end(), [&](glm::vec2 p){return inside(p, coords);});
     if(it == ballCoords.end()){
-        return;
+        return false;
     }
     
     auto curP = *it;
@@ -23,6 +23,8 @@ void Collider::collide(const std::vector<glm::vec2>& coords){
     auto newVelocity = velocity - 2 * glm::dot(velocity, norm) * norm;
     ball->setVelocity(newVelocity);
     ball->move(newVelocity * Globals::deltaTime);
+
+    return true;
 }
 
 float Collider::cross(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3){

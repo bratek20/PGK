@@ -8,20 +8,29 @@ GLuint Mesh::vertexArrayIdx;
 GLuint Mesh::vertexBufferIdx;
 GLuint Mesh::colorBufferIdx;
 
-constexpr float sqrt3 = 1.73205f;
-const GLfloat Mesh::vertexData[6 * 2] = {
-    -1.0f, -1.0f + sqrt3 / 3,
-    1.0f, -1.0f + sqrt3 / 3,
-    0.0f, sqrt3 * 2 / 3, 
+const float Mesh::EQ_TRI_H = 1.73205f / 2;
+const std::vector<GLfloat> Mesh::vertexData = {
+    -0.5f, -EQ_TRI_H / 3,
+    0.5f, -EQ_TRI_H / 3,
+    0.0f, EQ_TRI_H * 2 / 3, 
 
-    -1.0f, -1.0f,
-    1.0f, -1.0f,
-    -1.0f, 1.0f
+    -0.5f, -0.5f,
+    0.5f, -0.5f,
+    -0.5f, 0.5f,
+
+    -0.5f, -EQ_TRI_H,
+    0.5f, -EQ_TRI_H,
+    1.0f, 0.0f, 
+    0.5f, EQ_TRI_H,
+    -0.5f, EQ_TRI_H,
+    -1.0f, 0.0f,
 };
-const Mesh::Shape Mesh::EQUILATERAL = 0;
-const Mesh::Shape Mesh::RIGHT = 1;
+const Mesh::Shape Mesh::EQUILATERAL = {0, 3, GL_TRIANGLES};
+const Mesh::Shape Mesh::RIGHT = {6, 3, GL_TRIANGLES};
+const Mesh::Shape Mesh::HEXAGON = {12, 6, GL_TRIANGLE_FAN};
+const Mesh::Shape Mesh::HEXAGON_LINES = {12, 6, GL_LINE_STRIP};
 
-const GLfloat Mesh::colorData[9 * 3] = { 
+const std::vector<GLfloat> Mesh::colorData = { 
     1.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
     1.0f, 0.0f, 0.0f,
@@ -33,10 +42,26 @@ const GLfloat Mesh::colorData[9 * 3] = {
     0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 1.0f,
+
+    1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 1.0f,
+
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f
 };
 const Mesh::Color Mesh::RED = 0;
-const Mesh::Color Mesh::GREEN = 1;
-const Mesh::Color Mesh::BLUE = 2;
+const Mesh::Color Mesh::GREEN = 9;
+const Mesh::Color Mesh::BLUE = 18;
+const Mesh::Color Mesh::RAINBOW_HEX = 27;
+const Mesh::Color Mesh::WHITE_HEX = 45;
 // constexpr Color WHITE = {1.0f, 1.0f, 1.0f};
 // constexpr Color BLACK = {0.0f, 0.0f, 0.0f};
 // constexpr Color GREY = {0.75f, 0.75f, 0.75f};
@@ -47,7 +72,7 @@ const Mesh::Color Mesh::BLUE = 2;
 
 MeshPtr Mesh::create(Shape shape, Color color){
     auto mesh = MeshPtr(new Mesh());
-    mesh->shapeOff = shape;
+    mesh->shape = shape;
     mesh->colorOff = color;
     return mesh;
 }
@@ -64,11 +89,11 @@ void Mesh::init()
 
 	glGenBuffers(1, &vertexBufferIdx);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexData.size(), vertexData.data(), GL_STATIC_DRAW);
 
     glGenBuffers(1, &colorBufferIdx);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colorData), colorData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * colorData.size(), colorData.data(), GL_STATIC_DRAW);
 }
 
 void Mesh::clear()
@@ -92,7 +117,7 @@ void Mesh::render(const glm::mat3& worldMat){
         GL_FLOAT,                        
         GL_FALSE,                        
         0,                               
-        (void*)(6 * shapeOff * sizeof(GLfloat))                      
+        (void*)(shape.off * sizeof(GLfloat))                      
     );
 
     glBindBuffer(GL_ARRAY_BUFFER, colorBufferIdx);
@@ -103,15 +128,15 @@ void Mesh::render(const glm::mat3& worldMat){
         GL_FLOAT,                        
         GL_FALSE,                        
         0,                               
-        (void*)(9 * colorOff * sizeof(GLfloat))                      
+        (void*)(colorOff * sizeof(GLfloat))                      
     );
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(shape.type, 0, shape.size);
 }
 
 std::vector<glm::vec2> Mesh::getLocalCoords() const{
     std::vector<glm::vec2> localCoords;
     for(int i=0;i<3;i++){
-        localCoords.push_back(glm::vec2(vertexData[6*shapeOff + 2*i], vertexData[6*shapeOff + 2*i+1]));
+        localCoords.push_back(glm::vec2(vertexData[shape.off + 2*i], vertexData[shape.off + 2*i+1]));
     }
     return localCoords;
 }
