@@ -1,15 +1,15 @@
 #version 330 core
 
-layout(location = 0) in vec2 pos;
-layout(location = 1) in vec3 color;
+layout(location = 0) in vec3 pos; 
 
-uniform mat3 worldMat;
+uniform mat4 worldMat;
+uniform vec3 color;
 
 out vec3 vsColor;
 
 void main(){
-	vec3 worldPos = worldMat * vec3(pos, 1);
-	gl_Position =  vec4(worldPos, 1);
+	vec4 worldPos = worldMat * vec4(pos, 1);
+	gl_Position =  worldPos;
 	vsColor = color;
 }
 

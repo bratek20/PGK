@@ -2,7 +2,7 @@ GCC = g++ -std=c++14 -Wall -Wextra -g
 GL = -lGLEW -lGL -lglfw 
 LIBS = -L../lib/ -L/home/anl/lib/
 INCLUDES = -I../include/ -I/home/anl/include/
-ALL_OBJ = Globals.o Window.o Input.o Mesh.o Collider.o Actor.o aquarium.o 
+ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Scene.o aquarium.o 
 
 aquarium.out: $(ALL_OBJ)
 	$(GCC) -o aquarium.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
@@ -13,13 +13,16 @@ aquarium.o: aquarium.cpp  Globals.h  Window.h Mesh.h
 Globals.o: Globals.cpp Globals.h
 	$(GCC) -c  $(INCLUDES) Globals.cpp
 
+Color.o: Color.cpp Color.h
+	$(GCC) -c  $(INCLUDES) Color.cpp
+
 Window.o: Window.cpp Window.h
 	$(GCC) -c  $(INCLUDES) Window.cpp
 
 Input.o: Input.cpp Input.h Window.h
 	$(GCC) -c  $(INCLUDES) Input.cpp
 
-Mesh.o: Mesh.cpp Mesh.h
+Mesh.o: Mesh.cpp Mesh.h Color.h
 	$(GCC) -c  $(INCLUDES) Mesh.cpp
 
 Collider.o: Collider.cpp Collider.h
@@ -27,6 +30,12 @@ Collider.o: Collider.cpp Collider.h
 
 Actor.o: Actor.cpp Actor.h Mesh.h Collider.h
 	$(GCC) -c  $(INCLUDES) Actor.cpp
+
+Camera.o: Camera.cpp Camera.h Actor.h
+	$(GCC) -c  $(INCLUDES) Camera.cpp
+
+Scene.o: Scene.cpp Scene.h Camera.h Actor.h
+	$(GCC) -c  $(INCLUDES) Scene.cpp
 
 clean:
 	rm -f *.o *.out

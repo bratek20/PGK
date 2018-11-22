@@ -1,11 +1,10 @@
 #include "Actor.h"
 #include "Collider.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 #include <iostream>
 using namespace std;
 
-Actor::Actor(MeshPtr mesh) : position(0.0f, 0.0f), scale(1.0f, 1.0f), rotation(0.0f), mesh(mesh) {
+Actor::Actor(MeshPtr mesh) : position(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f), rotation(0.0f), mesh(mesh) {
 }
 
 ActorPtr Actor::create(MeshPtr mesh){
@@ -29,7 +28,7 @@ void Actor::update(){
         childs.end());
 }
 
-void Actor::render(const glm::mat3& worldMat){
+void Actor::render(const glm::mat4& worldMat){
     auto myWorldMat = worldMat * getLocalMat();
     if(mesh != nullptr){
         mesh->render(myWorldMat);
@@ -39,11 +38,11 @@ void Actor::render(const glm::mat3& worldMat){
         c->render(myWorldMat);
     }
 
-    if(mesh != nullptr && collides){
-        if(Collider::collide(mesh->getWorldCoords(myWorldMat))){
-           onCollide();
-        }
-    }
+    // if(mesh != nullptr && collides){
+    //     if(Collider::collide(mesh->getWorldCoords(myWorldMat))){
+    //        onCollide();
+    //     }
+    // }
 }
 
 void Actor::addChild(ActorPtr child){
@@ -61,33 +60,25 @@ int Actor::childsNum() const{
     return childs.size();
 }
 
-void Actor::setPosition(float x, float y){
-    position = glm::vec2(x, y);
+void Actor::setPosition(float x, float y, float z){
+    position = glm::vec3(x, y, z);
 }
 
-void Actor::setScale(float scaleX, float scaleY){
-    scale = glm::vec2(scaleX, scaleY);
+void Actor::setScale(float scaleX, float scaleY, float scaleZ){
+    scale = glm::vec3(scaleX, scaleY, scaleZ);
 }
 
 void Actor::setRotation(float rotation){
     this->rotation = rotation;   
 }
 
-void Actor::move(glm::vec2 dPos){
+void Actor::move(glm::vec3 dPos){
     position += dPos;
 }
 
 void Actor::rotate(float dRotation){
     rotation += dRotation;
 }
-
-float Actor::getScaleX() const{
-    return scale.x;
-}
-
-float Actor::getScaleY() const{
-    return scale.y;
-};
 
 void Actor::setOnCollide(std::function<void(ActorPtr)> onCollide){
     onCollideCallback = onCollide;
@@ -107,52 +98,37 @@ void Actor::onCollide(){
     }
 }
 
-glm::vec2 Actor::getWorldPosition() const{
-    return getWorldMat() * glm::vec3(position, 1.0f);
+glm::vec3 Actor::getWorldPosition() const{
+    return getWorldMat() * glm::vec4(position, 1.0f);
 }
 
-std::vector<glm::vec2> Actor::getWorldCoords() const{
+std::vector<glm::vec3> Actor::getWorldCoords() const{
     if(mesh != nullptr){
         return mesh->getWorldCoords(getWorldMat());
     }
     return {getWorldPosition()};
 }
 
-glm::mat3 Actor::getWorldMat() const{
+glm::mat4 Actor::getWorldMat() const{
     if(parent.expired()){
         return getLocalMat();
     }
     return parent.lock()->getWorldMat() * getLocalMat();
 }
 
-glm::mat3 Actor::getLocalMat() const{
+glm::mat4 Actor::getLocalMat() const{
     return getPositionMat() * getRotationMat() * getScaleMat();
 }
 
-glm::mat3 Actor::getPositionMat() const{
-    glm::mat4 positionMat(1.0f);
-    positionMat[2][0] = position.x;
-    positionMat[2][1] = position.y;
-    return positionMat;
+glm::mat4 Actor::getPositionMat() const{
+    return glm::translate(glm::mat4(1.0f), position);
 }
 
-glm::mat3 Actor::getScaleMat() const{
-    glm::mat3 scaleMat(1.0f);
-    scaleMat[0][0] = scale.x;
-    scaleMat[1][1] = scale.y;
-    return scaleMat;
+glm::mat4 Actor::getScaleMat() const{
+    return glm::scale(glm::mat4(1.0f), scale);
 }
 
-glm::mat3 Actor::getRotationMat() const{
-    glm::mat3 roatationMat(1.0f);
-    float radRot = glm::radians(rotation);
-    float sinRot = sin(radRot);
-    float cosRot = cos(radRot);
-
-    roatationMat[0][0] = cosRot;
-    roatationMat[0][1] = -sinRot;
-    roatationMat[1][0] = sinRot;
-    roatationMat[1][1] = cosRot;
-
+glm::mat4 Actor::getRotationMat() const{
+    glm::mat4 roatationMat(1.0f);
     return roatationMat;
 }
