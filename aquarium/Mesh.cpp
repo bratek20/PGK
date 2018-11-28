@@ -1,7 +1,9 @@
 #include "Mesh.h"
+#include "SphereGenerator.h"
 
 #include <common/shader.hpp>
 #include <iostream>
+
 using namespace std;
 
 GLuint Mesh::MVPId;
@@ -19,7 +21,6 @@ glm::mat4 Mesh::projectionMat;
 glm::mat4 Mesh::viewMat;
 glm::vec3 Mesh::globalLightPos;
 
-const float Mesh::EQ_TRI_H = 1.73205f / 2;
 std::vector<GLfloat> Mesh::vertexData = {
     -0.5f, -0.5f, -0.5f,
     0.5f, -0.5f, -0.5f,
@@ -108,7 +109,8 @@ std::vector<GLfloat> Mesh::vertexNormalsData = {
     -0.0f,  1.0f,  0.0f
 };
 
-const Mesh::Shape Mesh::CUBE = { 0, 108, GL_TRIANGLES };
+Mesh::Shape Mesh::CUBE = { 0, 108, GL_TRIANGLES };
+Mesh::Shape Mesh::SPHERE;
 
 MeshPtr Mesh::create(Shape shape, Color color){
     auto mesh = MeshPtr(new Mesh());
@@ -117,8 +119,12 @@ MeshPtr Mesh::create(Shape shape, Color color){
     return mesh;
 }
 
-void Mesh::init()
-{
+void Mesh::init(){
+    auto sphereMesh = SphereGenerator::generate(100, 100, 0.5f);
+    SPHERE = {108, sphereMesh.size(), GL_TRIANGLES};
+    vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
+    vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
+
     programId =  LoadShaders( "aquarium.vs", "aquarium.fs" ); 
     glUseProgram(programId);
 

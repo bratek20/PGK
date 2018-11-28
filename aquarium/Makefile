@@ -2,13 +2,16 @@ GCC = g++ -std=c++14 -Wall -Wextra -g
 GL = -lGLEW -lGL -lglfw 
 LIBS = -L../lib/ -L/home/anl/lib/
 INCLUDES = -I../include/ -I/home/anl/include/
-ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Light.o Scene.o aquarium.o 
+ALL_OBJ = SphereGenerator.o Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Light.o Scene.o aquarium.o 
 
 aquarium.out: $(ALL_OBJ)
 	$(GCC) -o aquarium.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
 
 aquarium.o: aquarium.cpp  Globals.h  Window.h Mesh.h
 	$(GCC) -c  $(INCLUDES) aquarium.cpp
+
+SphereGenerator.o: SphereGenerator.cpp SphereGenerator.h
+	$(GCC) -c  $(INCLUDES) SphereGenerator.cpp
 
 Globals.o: Globals.cpp Globals.h
 	$(GCC) -c  $(INCLUDES) Globals.cpp
@@ -22,7 +25,7 @@ Window.o: Window.cpp Window.h
 Input.o: Input.cpp Input.h Window.h
 	$(GCC) -c  $(INCLUDES) Input.cpp
 
-Mesh.o: Mesh.cpp Mesh.h Color.h
+Mesh.o: Mesh.cpp Mesh.h Color.h SphereGenerator.h
 	$(GCC) -c  $(INCLUDES) Mesh.cpp
 
 Collider.o: Collider.cpp Collider.h

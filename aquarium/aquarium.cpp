@@ -18,8 +18,15 @@ int main(){
 	Globals::deltaTime = 1.0f / 60.0f; 
 	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
 	
-	auto act = Actor::create(Mesh::create(Mesh::CUBE, Colors::GREEN));
-	scene->addChild(act);
+	auto sphere = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
+	sphere->move({2, 0.5f,0});
+	sphere->setScale(2,3,4);
+	scene->addChild(sphere);
+
+	auto cube = Actor::create(Mesh::create(Mesh::CUBE, Colors::RED));
+	cube->move({-2, 0, 1});
+	cube->setScale(1,3,2);
+	scene->addChild(cube);
 	
 	do{
 		scene->update();

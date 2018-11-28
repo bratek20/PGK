@@ -42,10 +42,8 @@ class Mesh {
     Color color;
 
 public:
-    static const float EQ_TRI_H;
-
-    static const Shape CUBE;
-    static const Shape SPHERE;
+    static Shape CUBE;
+    static Shape SPHERE;
 
     static MeshPtr create(Shape shape, Color color);
 
