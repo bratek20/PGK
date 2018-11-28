@@ -2,7 +2,7 @@ GCC = g++ -std=c++14 -Wall -Wextra -g
 GL = -lGLEW -lGL -lglfw 
 LIBS = -L../lib/ -L/home/anl/lib/
 INCLUDES = -I../include/ -I/home/anl/include/
-ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Scene.o aquarium.o 
+ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Light.o Scene.o aquarium.o 
 
 aquarium.out: $(ALL_OBJ)
 	$(GCC) -o aquarium.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
@@ -34,7 +34,10 @@ Actor.o: Actor.cpp Actor.h Mesh.h Collider.h
 Camera.o: Camera.cpp Camera.h Actor.h
 	$(GCC) -c  $(INCLUDES) Camera.cpp
 
-Scene.o: Scene.cpp Scene.h Camera.h Actor.h
+Light.o: Light.cpp Light.h Actor.h
+	$(GCC) -c  $(INCLUDES) Light.cpp
+
+Scene.o: Scene.cpp Scene.h Camera.h Light.h Actor.h
 	$(GCC) -c  $(INCLUDES) Scene.cpp
 
 clean:

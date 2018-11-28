@@ -7,8 +7,9 @@
 class Window{
     static GLFWwindow* window;
 public:
-    static bool init();
+    static bool open();
     static void clear();
+    static void close();
 
     static GLFWwindow* getPtr();
 };

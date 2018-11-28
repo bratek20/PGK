@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(){
-    if(!Window::init()){
+    if(!Window::open()){
         return -1;
     }
     Mesh::init();
@@ -24,7 +24,7 @@ int main(){
 	do{
 		scene->update();
 
-        glClear( GL_COLOR_BUFFER_BIT );
+        Window::clear();
 		scene->render();
 		glfwSwapBuffers(Window::getPtr());
 
@@ -38,7 +38,7 @@ int main(){
 		   glfwWindowShouldClose(Window::getPtr()) == 0 );
 
     Mesh::clear();
-	Window::clear();
+	Window::close();
 
 	return 0;
 }

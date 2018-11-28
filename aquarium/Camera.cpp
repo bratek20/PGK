@@ -7,10 +7,6 @@ CameraPtr Camera::create(){
     return CameraPtr(new Camera());
 }
 
-glm::mat4 Camera::getCameraMat(){
-    return getProjectionMat() * getViewMat(); 
-}
-
 glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 getWorldPosition(), // the position of your camera, in world space

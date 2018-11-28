@@ -21,12 +21,22 @@ class Mesh {
         int type;
     };
 
+    static GLuint MVPId;
+    static GLuint viewMatId;
     static GLuint worldMatId;
-    static GLuint colorId;
+    static GLuint meshColorId;
+    static GLuint lightId;
+
     static GLuint programId;
     static GLuint vertexArrayIdx;
     static GLuint vertexBufferIdx;
-    static const std::vector<GLfloat> vertexData;
+    static GLuint vertexNormalsBufferIdx;
+    static std::vector<GLfloat> vertexData;
+    static std::vector<GLfloat> vertexNormalsData;
+
+    static glm::mat4 projectionMat;
+    static glm::mat4 viewMat;
+    static glm::vec3 globalLightPos;
 
     Shape shape;
     Color color;
@@ -41,6 +51,10 @@ public:
 
     static void init(); 
     static void clear();
+
+    static void setProjectionMat(const glm::mat4& mat);
+    static void setViewMat(const glm::mat4& mat);
+    static void setLightPosition(const glm::vec3& globalPos);
 
     void render(const glm::mat4& worldMat);
     std::vector<glm::vec3> getLocalCoords() const;
