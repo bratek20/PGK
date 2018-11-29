@@ -1,7 +1,8 @@
 #include "Input.h"
 #include "Window.h"
 
-bool Input::isKeyPressed[1024];
+bool Input::isKeyPressed[Input::KEY_PRESSED_SIZE];
+std::function<void()> Input::pressedCallback[Input::KEY_PRESSED_SIZE];
 glm::vec2 Input::mouseOffset;
 const float Input::MOUSE_SENSIVITY = 20;
 
@@ -12,6 +13,7 @@ void Input::init(){
     glfwSetCursorPosCallback(Window::getPtr(), onMouseMoved);
     glfwSetMouseButtonCallback(Window::getPtr(), onMouseClicked);
     glfwSetInputMode(Window::getPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    onKeyPressed(GLFW_KEY_ESCAPE, [](){glfwSetWindowShouldClose(Window::getPtr(), GL_TRUE);});
 }
 
 void Input::handle(){
@@ -19,26 +21,40 @@ void Input::handle(){
     glfwPollEvents();
 }
 
+void Input::onKeyPressed(int key, std::function<void()> callback){
+    if(checkRange(key)){
+        pressedCallback[key] = callback;
+    }
+}
+
 bool Input::isPressed(int key){
-    return isKeyPressed[key];
+    return checkRange(key) && isKeyPressed[key];
 }
 
 glm::vec2 Input::getMouseOffset(){
     return mouseOffset;
 }
 
+bool Input::checkRange(int key){
+    return 0 <= key && key < KEY_PRESSED_SIZE;
+}
+
 void Input::onKeyClicked(GLFWwindow*, int key, int, int action, int){
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
-        glfwSetWindowShouldClose(Window::getPtr(), GL_TRUE);
+    if (!checkRange(key)){
+        return;
     }
 
-    if (key >= 0 && key < 1024){
-        if (action == GLFW_PRESS){
-            isKeyPressed[key] = true;
-        }
-        else if (action == GLFW_RELEASE){
-            isKeyPressed[key] = false;
-        }
+    bool firstPressed = !isKeyPressed[key] && action == GLFW_PRESS; 
+    if (action == GLFW_PRESS){
+        isKeyPressed[key] = true;
+    }
+    else if (action == GLFW_RELEASE){
+        isKeyPressed[key] = false;
+    }
+    
+    if(firstPressed && pressedCallback[key])
+    {
+        pressedCallback[key]();
     }
 }
 

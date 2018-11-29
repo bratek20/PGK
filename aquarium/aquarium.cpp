@@ -8,15 +8,34 @@
 
 using namespace std;
 
-int main(){
-    if(!Window::open()){
-        return -1;
-    }
-	Input::init();
-    Mesh::init();
-	Globals::init();
-	ScenePtr scene = Scene::create();
-	
+ScenePtr scene;
+PlayerPtr player;
+
+int cameraSetting = 0;
+void changeCameraSetting(){
+	auto camera = scene->getCamera();
+	cameraSetting = (cameraSetting + 1)%3;
+	if(cameraSetting == 0){ // out of aquarium
+		scene->addChild(camera);
+		camera->setPosition({0, 4, -10});
+		camera->setRotation({0, 0, 0});
+	}
+	else if(cameraSetting == 1){ // third person
+		player->addChild(camera);
+		camera->setPosition({0, 2, -3});
+		camera->setRotation({-10, 0, 0});
+	}
+	else if(cameraSetting == 2){ // first person
+		player->addChild(camera);
+		camera->setPosition({0, 1, 1});
+		camera->setRotation({0, 0, 0});
+	}
+}
+
+void initGame(){
+	scene = Scene::create();
+	player = Player::create();
+
 	auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BROWN));
 	floor->setScale({100,1,100});
 	floor->move({0,-1,0});
@@ -32,9 +51,23 @@ int main(){
 	//sphere->setScale(2,3,4);
 	scene->addChild(s2);
 
-	auto player = Player::create();
 	player->addChild(scene->getCamera());
 	scene->addChild(player);
+
+	changeCameraSetting();
+}
+
+int main(){
+    if(!Window::open()){
+        return -1;
+    }
+	Input::init();
+    Mesh::init();
+	Globals::init();
+	
+	Input::onKeyPressed(GLFW_KEY_C, changeCameraSetting);
+
+	initGame();
 	
 	while(!Window::shouldClose()){
 		Input::handle();

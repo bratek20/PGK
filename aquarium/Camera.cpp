@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
+
 Camera::Camera() : Actor(nullptr){
     lookPoint = Actor::create(nullptr);
     lookPoint->move({0,0,1});
@@ -15,7 +17,7 @@ glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 getWorldPosition(), // the position of your camera, in world space
                 lookPoint->getWorldPosition(),   // where you want to look at, in world space
-                glm::vec3(0,1,0)       // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
+                LOCAL_UP       // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
             );
 }
 
@@ -27,4 +29,11 @@ glm::mat4 Camera::getProjectionMat(){
                 0.1f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
                 100.0f             // Far clipping plane. Keep as little as possible.
             );
+}
+
+#include <iostream>
+void Camera::onUpdate(){
+    glm::vec3 globalUp = getWorldMat() * glm::vec4(LOCAL_UP, 0);
+    float angle = glm::acos(glm::dot(LOCAL_UP, globalUp));
+    std::cout << glm::degrees(angle) << "\n";
 }

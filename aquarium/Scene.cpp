@@ -2,7 +2,6 @@
 
 Scene::Scene() : Actor(nullptr) {
     camera = Camera::create();
-    camera->move({0, 3, -5});
 
     light = Light::create();
     light->move({3, 5, -2});
