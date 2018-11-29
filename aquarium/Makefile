@@ -7,7 +7,7 @@ ALL_OBJ = SphereGenerator.o Globals.o Color.o Window.o Input.o Mesh.o Collider.o
 aquarium.out: $(ALL_OBJ)
 	$(GCC) -o aquarium.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
 
-aquarium.o: aquarium.cpp  Globals.h  Window.h Mesh.h
+aquarium.o: aquarium.cpp  Globals.h  Window.h Input.h Mesh.h
 	$(GCC) -c  $(INCLUDES) aquarium.cpp
 
 SphereGenerator.o: SphereGenerator.cpp SphereGenerator.h

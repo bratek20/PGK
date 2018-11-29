@@ -9,6 +9,8 @@ class Window{
 public:
     static bool open();
     static void clear();
+    static void swapBuffers();
+    static bool shouldClose();
     static void close();
 
     static GLFWwindow* getPtr();

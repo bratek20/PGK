@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Input.h"
 #include "Globals.h"
 #include "Mesh.h"
 #include "Scene.h"
@@ -10,13 +11,10 @@ int main(){
     if(!Window::open()){
         return -1;
     }
+	Input::init();
     Mesh::init();
-
+	Globals::init();
 	ScenePtr scene = Scene::create();
-
-	Globals::currentFrameTime = glfwGetTime();
-	Globals::deltaTime = 1.0f / 60.0f; 
-	Globals::previousFrameTime = Globals::currentFrameTime - Globals::deltaTime;
 	
 	auto sphere = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
 	sphere->move({2, 0.5f,0});
@@ -28,25 +26,20 @@ int main(){
 	cube->setScale(1,3,2);
 	scene->addChild(cube);
 	
-	do{
+	while(!Window::shouldClose()){
+		Input::handle();
+
 		scene->update();
 
         Window::clear();
 		scene->render();
-		glfwSwapBuffers(Window::getPtr());
-
-		glfwPollEvents();
-
-		Globals::previousFrameTime = Globals::currentFrameTime;
-		Globals::currentFrameTime = glfwGetTime();
-		Globals::deltaTime = Globals::currentFrameTime - Globals::previousFrameTime; 
+		Window::swapBuffers();
+		
+		Globals::updateTime();
 	}
-	while( glfwGetKey(Window::getPtr(), GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-		   glfwWindowShouldClose(Window::getPtr()) == 0 );
 
     Mesh::clear();
 	Window::close();
-
 	return 0;
 }
 
