@@ -2,6 +2,7 @@
 #include "Window.h"
 
 bool Input::isKeyPressed[1024];
+glm::vec2 Input::mouseOffset;
 const float Input::MOUSE_SENSIVITY = 1.0f;
 
 void Input::init(){
@@ -14,6 +15,14 @@ void Input::init(){
 
 void Input::handle(){
     glfwPollEvents();
+}
+
+bool Input::isPressed(int key){
+    return isKeyPressed[key];
+}
+
+glm::vec2 Input::getMouseOffset(){
+    return mouseOffset;
 }
 
 void Input::onKeyClicked(GLFWwindow*, int key, int, int action, int){
@@ -42,13 +51,12 @@ void Input::onMouseMoved(GLFWwindow*, double xpos, double ypos){
         firstMouseMove = 0;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to left
+    mouseOffset.x = xpos - lastX;
+    mouseOffset.y = lastY - ypos; // Reversed since y-coordinates go from bottom to left
     lastX = xpos;
     lastY = ypos;
 	
-    xoffset *= MOUSE_SENSIVITY;
-    yoffset *= MOUSE_SENSIVITY;
+    mouseOffset *= MOUSE_SENSIVITY;
 }
 
 void Input::onMouseClicked(GLFWwindow*, int button, int action, int){

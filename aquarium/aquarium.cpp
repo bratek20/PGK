@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Scene.h"
 #include "Color.h"
+#include "Player.h"
 
 using namespace std;
 
@@ -21,10 +22,8 @@ int main(){
 	sphere->setScale(2,3,4);
 	scene->addChild(sphere);
 
-	auto cube = Actor::create(Mesh::create(Mesh::CUBE, Colors::RED));
-	cube->move({-2, 0, 1});
-	cube->setScale(1,3,2);
-	scene->addChild(cube);
+	auto player = Player::create();
+	scene->addChild(player);
 	
 	while(!Window::shouldClose()){
 		Input::handle();

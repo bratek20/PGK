@@ -2,15 +2,20 @@
 #define INPUT_H
 
 #include "Window.h"
+#include "glm/glm.hpp"
 
 class Input{
     static bool isKeyPressed[1024];
-
+    static glm::vec2 mouseOffset;
+    
 public:
     static const float MOUSE_SENSIVITY;
 
     static void init();
     static void handle();
+
+    static bool isPressed(int key);
+    static glm::vec2 getMouseOffset();
 
 private:
     static void onKeyClicked(GLFWwindow*, int key, int , int action, int);
