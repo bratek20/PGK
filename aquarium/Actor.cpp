@@ -60,15 +60,15 @@ int Actor::childsNum() const{
     return childs.size();
 }
 
-void Actor::setPosition(float x, float y, float z){
-    position = glm::vec3(x, y, z);
+void Actor::setPosition(glm::vec3 position){
+    this->position = position;
 }
 
-void Actor::setScale(float scaleX, float scaleY, float scaleZ){
-    scale = glm::vec3(scaleX, scaleY, scaleZ);
+void Actor::setScale(glm::vec3 scale){
+    this->scale = scale;
 }
 
-void Actor::setRotation(float rotation){
+void Actor::setRotation(glm::vec3 rotation){
     this->rotation = rotation;   
 }
 
@@ -76,8 +76,8 @@ void Actor::move(glm::vec3 dPos){
     position += dPos;
 }
 
-void Actor::rotate(float dRotation){
-    rotation += dRotation;
+void Actor::rotate(glm::vec3 dRot){
+    rotation += dRot;
 }
 
 void Actor::setOnCollide(std::function<void(ActorPtr)> onCollide){
@@ -87,7 +87,6 @@ void Actor::setOnCollide(std::function<void(ActorPtr)> onCollide){
 void Actor::disableCollisions(){
     collides = false;
 }
-
 
 void Actor::onCollide(){
     if(onCollideCallback){
@@ -107,6 +106,10 @@ std::vector<glm::vec3> Actor::getWorldCoords() const{
         return mesh->getWorldCoords(getWorldMat());
     }
     return {getWorldPosition()};
+}
+
+glm::vec3 Actor::getRotation() const{
+    return rotation;
 }
 
 glm::mat4 Actor::getWorldMat() const{
@@ -129,6 +132,14 @@ glm::mat4 Actor::getScaleMat() const{
 }
 
 glm::mat4 Actor::getRotationMat() const{
-    glm::mat4 roatationMat(1.0f);
-    return roatationMat;
+    static const glm::vec3 xAxis = glm::vec3(1,0,0);
+    static const glm::vec3 yAxis = glm::vec3(0,1,0);
+    static const glm::vec3 zAxis = glm::vec3(0,0,1);
+
+    glm::mat4 rotationMat(1.0f);
+    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.z), zAxis);
+    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.y), yAxis);
+    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.x), xAxis);
+    
+    return rotationMat;
 }

@@ -1,16 +1,20 @@
 #include "Camera.h"
 
 Camera::Camera() : Actor(nullptr){
+    lookPoint = Actor::create(nullptr);
+    lookPoint->move({0,0,1});
 }
 
 CameraPtr Camera::create(){
-    return CameraPtr(new Camera());
+    CameraPtr camera = CameraPtr(new Camera());
+    camera->addChild(camera->lookPoint);
+    return camera;
 }
 
 glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 getWorldPosition(), // the position of your camera, in world space
-                glm::vec3(0,0,0),   // where you want to look at, in world space
+                lookPoint->getWorldPosition(),   // where you want to look at, in world space
                 glm::vec3(0,1,0)       // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
             );
 }

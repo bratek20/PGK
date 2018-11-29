@@ -17,12 +17,23 @@ int main(){
 	Globals::init();
 	ScenePtr scene = Scene::create();
 	
-	auto sphere = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
-	sphere->move({2, 0.5f,0});
-	sphere->setScale(2,3,4);
-	scene->addChild(sphere);
+	auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BROWN));
+	floor->setScale({100,1,100});
+	floor->move({0,-1,0});
+
+	scene->addChild(floor); 
+	auto s1 = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
+	s1->move({2, 0.5f,0});
+	//sphere->setScale(2,3,4);
+	scene->addChild(s1);
+
+	auto s2 = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
+	s2->move({-2, 0.5f,0});
+	//sphere->setScale(2,3,4);
+	scene->addChild(s2);
 
 	auto player = Player::create();
+	player->addChild(scene->getCamera());
 	scene->addChild(player);
 	
 	while(!Window::shouldClose()){

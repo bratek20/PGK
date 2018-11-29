@@ -15,6 +15,8 @@ public:
 protected:
     Camera();
     
+private:
+    ActorPtr lookPoint;
 };
 
 #endif

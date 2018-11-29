@@ -15,6 +15,8 @@ public:
     static ScenePtr create();
     void render();
 
+    CameraPtr getCamera() const;
+
 protected:
     Scene();
 };

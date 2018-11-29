@@ -14,7 +14,7 @@ using ActorCallback = std::function<void(ActorPtr)>;
 class Actor : public std::enable_shared_from_this<Actor> {
     glm::vec3 position;
     glm::vec3 scale;
-    float rotation;
+    glm::vec3 rotation;
     MeshPtr mesh;   
     ActorCallback onCollideCallback;
     bool exists = true;
@@ -33,18 +33,19 @@ public:
 
     int childsNum() const;
     
-    void setPosition(float x, float y, float z);
-    void setScale(float scaleX, float scaleY, float scaleZ);
-    void setRotation(float rotation);
+    void setPosition(glm::vec3 position);
+    void setScale(glm::vec3 scale);
+    void setRotation(glm::vec3 rotation);
 
     void move(glm::vec3 dPos);
-    void rotate(float dRotation);
+    void rotate(glm::vec3 dRot);
 
     void setOnCollide(std::function<void(ActorPtr)> onCollide);
     void disableCollisions();
 
     glm::vec3 getWorldPosition() const;
     std::vector<glm::vec3> getWorldCoords() const;
+    glm::vec3 getRotation() const;
     
 protected:
     std::weak_ptr<Actor> parent; 
@@ -52,14 +53,14 @@ protected:
     Actor(MeshPtr mesh);
     virtual void onUpdate() {};
 
-private:
-    void onCollide();
-    
     glm::mat4 getWorldMat() const;
     glm::mat4 getLocalMat() const;
     glm::mat4 getPositionMat() const;
     glm::mat4 getScaleMat() const;
     glm::mat4 getRotationMat() const;
+
+private:
+    void onCollide();
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 bool Input::isKeyPressed[1024];
 glm::vec2 Input::mouseOffset;
-const float Input::MOUSE_SENSIVITY = 1.0f;
+const float Input::MOUSE_SENSIVITY = 20;
 
 void Input::init(){
     // Ensure we can capture the escape key being pressed below
@@ -11,9 +11,11 @@ void Input::init(){
     glfwSetKeyCallback(Window::getPtr(), onKeyClicked);
     glfwSetCursorPosCallback(Window::getPtr(), onMouseMoved);
     glfwSetMouseButtonCallback(Window::getPtr(), onMouseClicked);
+    glfwSetInputMode(Window::getPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Input::handle(){
+    mouseOffset = glm::vec3(0,0,0);
     glfwPollEvents();
 }
 

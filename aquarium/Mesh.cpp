@@ -120,7 +120,7 @@ MeshPtr Mesh::create(Shape shape, Color color){
 }
 
 void Mesh::init(){
-    auto sphereMesh = SphereGenerator::generate(100, 100, 0.5f);
+    auto sphereMesh = SphereGenerator::generate(10, 10, 0.5f);
     SPHERE = {108, sphereMesh.size(), GL_TRIANGLES};
     vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
     vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
