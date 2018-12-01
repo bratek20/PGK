@@ -2,6 +2,7 @@
 #define COLOR_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 struct Color
 {
@@ -12,6 +13,10 @@ struct Color
     bool operator==(const Color& other)
     {
         return r == other.r && g == other.g && b == other.b;
+    }
+    
+    operator glm::vec3() const {
+        return {r, g, b};
     }
 
     void apply(GLuint uniformId);

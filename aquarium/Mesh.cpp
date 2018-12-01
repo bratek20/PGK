@@ -13,6 +13,7 @@ GLuint Mesh::viewMatId;
 GLuint Mesh::worldMatId;
 GLuint Mesh::meshColorId;
 
+GLuint Mesh::lightsNumId;
 GLuint Mesh::lightPosId;
 GLuint Mesh::lightPowerId;
 GLuint Mesh::lightColorId;
@@ -139,6 +140,7 @@ void Mesh::init(){
 	worldMatId = glGetUniformLocation(programId, "M");
     meshColorId = glGetUniformLocation(programId, "MeshColor");
 
+    lightsNumId = glGetUniformLocation(programId, "LightsNum");
     lightPosId = glGetUniformLocation(programId, "LightPosition_worldspace");
     lightPowerId = glGetUniformLocation(programId, "LightPower");
     lightColorId = glGetUniformLocation(programId, "LightColor");
@@ -182,12 +184,24 @@ void Mesh::addLight(LightPtr light){
 }
 
 void Mesh::applyLights(){
-    auto light = lights[0];
+    int size = lights.size();
+    glUniform1i(lightsNumId, size); 
 
-    glUniform3fv(lightPosId, 1, glm::value_ptr(light->getWorldPosition()));
-    glUniform1f(lightPowerId, light->getPower());
-    light->getColor().apply(lightColorId);
-    glUniform3fv(lightCoefficientsId, 1, glm::value_ptr(light->getCoefficients()));
+    glm::vec3 pos[size];
+    float power[size];
+    glm::vec3 color[size];
+    glm::vec3 coefficient[size];
+    for(int i=0;i<size;i++){
+        pos[i] = lights[i]->getWorldPosition();
+        power[i] = lights[i]->getPower();
+        color[i] = static_cast<glm::vec3>(lights[i]->getColor());
+        coefficient[i] = lights[i]->getCoefficients();
+    }
+
+    glUniform3fv(lightPosId, size, glm::value_ptr(pos[0]));
+    glUniform1fv(lightPowerId, size, power);
+    glUniform3fv(lightColorId, size, glm::value_ptr(color[0]));
+    glUniform3fv(lightCoefficientsId, size, glm::value_ptr(coefficient[0]));
 }
 
 void Mesh::render(const glm::mat4& worldMat){

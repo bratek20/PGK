@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Input.h"
 #include "Globals.h"
+#include "Light.h"
 
 #include <algorithm>
 
@@ -8,8 +9,13 @@ Player::Player() : Actor(Mesh::create(Mesh::CUBE, Colors::RED)) {
 }
 
 PlayerPtr Player::create(){
-    return PlayerPtr(new Player());
+    auto player = PlayerPtr(new Player());
+    auto light = Light::create(10, Colors::RED, {0, 1, 0});
+    //light->move({0, 0, 2});
+    player->addChild(light);
+    return player;
 }
+
 
 void Player::onUpdate(){
     static const float VELOCITY = 10;

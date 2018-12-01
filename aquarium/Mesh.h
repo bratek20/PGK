@@ -30,6 +30,7 @@ class Mesh {
     static GLuint worldMatId;
     static GLuint meshColorId;
 
+    static GLuint lightsNumId;
     static GLuint lightPosId;
     static GLuint lightPowerId;
     static GLuint lightColorId;
