@@ -45,6 +45,7 @@ public:
 
     glm::vec3 getWorldPosition() const;
     std::vector<glm::vec3> getWorldCoords() const;
+    glm::vec3 getScale() const;
     glm::vec3 getRotation() const;
     
 protected:

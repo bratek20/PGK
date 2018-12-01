@@ -15,6 +15,8 @@ struct Color
     }
 
     void apply(GLuint uniformId);
+
+    static Color random();
 };
 
 namespace Colors{

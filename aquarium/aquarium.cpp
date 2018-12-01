@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Color.h"
 #include "Player.h"
+#include "Aquarium.h"
 
 using namespace std;
 
@@ -32,53 +33,17 @@ void changeCameraSetting(){
 	}
 }
 
-ActorPtr makeAquariumWall(float size, float height, int dx, int dz){
-	auto wall = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
-	wall->setScale({size, height, 1});
-	wall->move({size/2 * dx, 0, size/2*dz});
-	if(dx != 0){
-		wall->rotate({0, 90, 0});
-	}
-	return wall;
-}
-
-ActorPtr makeAquarium(float size, float height){
-	auto aquarium = Actor::create(nullptr);
-
-	auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
-	floor->setScale({size,1,size});
-	
-	aquarium->addChilds({
-		floor,
-		makeAquariumWall(size, height, 1, 0),
-		makeAquariumWall(size, height, -1, 0),
-		makeAquariumWall(size, height, 0, 1),
-		makeAquariumWall(size, height, 0, -1),
-	});
-
-	return aquarium;
-}
-
 void initGame(){
+	static const float WIDTH = 60;
+	static const float HEIGHT = 30;
+	static const float DEPTH = 100;
+
 	scene = Scene::create();
 	player = Player::create();
+	player->setPosition({0, HEIGHT/2, -DEPTH/2 * 0.8f});
 
-	
-
-	scene->addChild(makeAquarium(100, 33)); 
-	auto s1 = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
-	s1->move({2, 0.5f,0});
-	//sphere->setScale(2,3,4);
-	scene->addChild(s1);
-
-	auto s2 = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
-	s2->move({-2, 0.5f,0});
-	//sphere->setScale(2,3,4);
-	scene->addChild(s2);
-
-	player->addChild(scene->getCamera());
 	scene->addChild(player);
-
+	scene->addChild(Aquarium::create(WIDTH, HEIGHT, DEPTH));
 	changeCameraSetting();
 }
 
@@ -90,7 +55,7 @@ int main(){
     Mesh::init();
 	Globals::init();
 	
-	Input::onKeyPressed(GLFW_KEY_C, changeCameraSetting);
+	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
 
 	initGame();
 	

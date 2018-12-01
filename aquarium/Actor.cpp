@@ -113,6 +113,10 @@ std::vector<glm::vec3> Actor::getWorldCoords() const{
     return {getWorldPosition()};
 }
 
+glm::vec3 Actor::getScale() const{
+    return scale;
+}
+
 glm::vec3 Actor::getRotation() const{
     return rotation;
 }

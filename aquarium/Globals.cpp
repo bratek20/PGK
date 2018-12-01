@@ -1,6 +1,7 @@
 #include "Globals.h"
 
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 
 float Globals::previousFrameTime;
 float Globals::currentFrameTime;
@@ -16,4 +17,8 @@ void Globals::updateTime(){
     Globals::previousFrameTime = Globals::currentFrameTime;
     Globals::currentFrameTime = glfwGetTime();
     Globals::deltaTime = Globals::currentFrameTime - Globals::previousFrameTime; 
+}
+
+float Globals::random(float a, float b){
+    return a + (b - a) * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 }

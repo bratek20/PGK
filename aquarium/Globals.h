@@ -9,6 +9,8 @@ public:
 
     static void init();
     static void updateTime();
+
+    static float random(float a = 0.0f, float b = 1.0f);
 };
 
 #endif
