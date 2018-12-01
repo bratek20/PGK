@@ -32,15 +32,40 @@ void changeCameraSetting(){
 	}
 }
 
+ActorPtr makeAquariumWall(float size, float height, int dx, int dz){
+	auto wall = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
+	wall->setScale({size, height, 1});
+	wall->move({size/2 * dx, 0, size/2*dz});
+	if(dx != 0){
+		wall->rotate({0, 90, 0});
+	}
+	return wall;
+}
+
+ActorPtr makeAquarium(float size, float height){
+	auto aquarium = Actor::create(nullptr);
+
+	auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
+	floor->setScale({size,1,size});
+	
+	aquarium->addChilds({
+		floor,
+		makeAquariumWall(size, height, 1, 0),
+		makeAquariumWall(size, height, -1, 0),
+		makeAquariumWall(size, height, 0, 1),
+		makeAquariumWall(size, height, 0, -1),
+	});
+
+	return aquarium;
+}
+
 void initGame(){
 	scene = Scene::create();
 	player = Player::create();
 
-	auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BROWN));
-	floor->setScale({100,1,100});
-	floor->move({0,-1,0});
+	
 
-	scene->addChild(floor); 
+	scene->addChild(makeAquarium(100, 33)); 
 	auto s1 = Actor::create(Mesh::create(Mesh::SPHERE, Colors::GREEN));
 	s1->move({2, 0.5f,0});
 	//sphere->setScale(2,3,4);

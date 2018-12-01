@@ -1,7 +1,9 @@
 #include "Mesh.h"
 #include "SphereGenerator.h"
+#include "Light.h"
 
 #include <common/shader.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 using namespace std;
@@ -10,7 +12,11 @@ GLuint Mesh::MVPId;
 GLuint Mesh::viewMatId;
 GLuint Mesh::worldMatId;
 GLuint Mesh::meshColorId;
-GLuint Mesh::lightId;
+
+GLuint Mesh::lightPosId;
+GLuint Mesh::lightPowerId;
+GLuint Mesh::lightColorId;
+GLuint Mesh::lightCoefficientsId;
 
 GLuint Mesh::programId;
 GLuint Mesh::vertexArrayIdx;
@@ -19,7 +25,7 @@ GLuint Mesh::vertexNormalsBufferIdx;
 
 glm::mat4 Mesh::projectionMat;
 glm::mat4 Mesh::viewMat;
-glm::vec3 Mesh::globalLightPos;
+std::vector<WeakLightPtr> Mesh::lights;
 
 std::vector<GLfloat> Mesh::vertexData = {
     -0.5f, -0.5f, -0.5f,
@@ -132,7 +138,11 @@ void Mesh::init(){
     viewMatId = glGetUniformLocation(programId, "V");
 	worldMatId = glGetUniformLocation(programId, "M");
     meshColorId = glGetUniformLocation(programId, "MeshColor");
-    lightId = glGetUniformLocation(programId, "LightPosition_worldspace");
+
+    lightPosId = glGetUniformLocation(programId, "LightPosition_worldspace");
+    lightPowerId = glGetUniformLocation(programId, "LightPower");
+    lightColorId = glGetUniformLocation(programId, "LightColor");
+    lightCoefficientsId = glGetUniformLocation(programId, "LightDistanceCoefficients");
 
     glGenVertexArrays(1, &vertexArrayIdx);
 	glBindVertexArray(vertexArrayIdx);
@@ -147,7 +157,6 @@ void Mesh::init(){
 
     setProjectionMat(glm::mat4(1.0f));
     setViewMat(glm::mat4(1.0f));
-    setLightPosition({0,0,0});
 }
 
 void Mesh::clear(){
@@ -167,9 +176,18 @@ void Mesh::setViewMat(const glm::mat4& mat){
     viewMat = mat;
 }
 
-void Mesh::setLightPosition(const glm::vec3& globalPos){
-    glUniform3f(lightId, globalPos.x, globalPos.y, globalPos.z);
-    globalLightPos = globalPos;
+void Mesh::addLight(LightPtr light){
+    lights.push_back(light);
+   
+}
+
+void Mesh::applyLights(){
+    auto light = lights[0];
+
+    glUniform3fv(lightPosId, 1, glm::value_ptr(light->getWorldPosition()));
+    glUniform1f(lightPowerId, light->getPower());
+    light->getColor().apply(lightColorId);
+    glUniform3fv(lightCoefficientsId, 1, glm::value_ptr(light->getCoefficients()));
 }
 
 void Mesh::render(const glm::mat4& worldMat){
@@ -177,7 +195,7 @@ void Mesh::render(const glm::mat4& worldMat){
     glUniformMatrix4fv(worldMatId, 1, GL_FALSE, &worldMat[0][0]);
     glUniformMatrix4fv(MVPId, 1, GL_FALSE, &MVP[0][0]);
 
-    glUniform3f(meshColorId, color.r, color.g, color.b);
+    color.apply(meshColorId);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
     glEnableVertexAttribArray(0);

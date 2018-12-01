@@ -31,8 +31,8 @@ void Player::onUpdate(){
 
     auto newRot = getRotation() + glm::vec3(-Input::getMouseOffset().y * Globals::deltaTime, -Input::getMouseOffset().x * Globals::deltaTime, 0); 
     static const float MAX_X_DEG = 66;
-    newRot.x = std::min(newRot.x, MAX_X_DEG);
-    newRot.x = std::max(newRot.x, -MAX_X_DEG);
+    //newRot.x = std::min(newRot.x, MAX_X_DEG);
+    //newRot.x = std::max(newRot.x, -MAX_X_DEG);
     setRotation(newRot);
 
     step = getRotationMat() * glm::vec4(step, 0);

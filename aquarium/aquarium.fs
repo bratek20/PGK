@@ -10,14 +10,11 @@ out vec3 color;
 
 uniform vec3 MeshColor;
 uniform vec3 LightPosition_worldspace;
+uniform vec3 LightColor;
+uniform float LightPower;
+uniform vec3 LightDistanceCoefficients;
 
 void main(){
-
-	// Light emission properties
-	// You probably want to put them as uniforms
-	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 50.0f;
-	
 	// Material properties
 	vec3 MaterialDiffuseColor = MeshColor;
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
@@ -47,13 +44,16 @@ void main(){
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 	
+	float distanceLoss = 
+		distance * distance * LightDistanceCoefficients.x +
+		distance * LightDistanceCoefficients.y +
+		LightDistanceCoefficients.z;   
+
 	color = 
 		// Ambient : simulates indirect lighting
 		MaterialAmbientColor
 		// Diffuse : "color" of the object
-		+ MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance)
+		+ MaterialDiffuseColor * LightColor * LightPower * cosTheta / distanceLoss
 		// Specular : reflective highlight, like a mirror
-		+ MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance)
-		;
-
+		+ MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / distanceLoss;
 }

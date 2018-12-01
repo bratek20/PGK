@@ -2,6 +2,11 @@
 #include "Collider.h"
 #include <algorithm>
 #include <iostream>
+#include<glm/glm.hpp>
+#include<glm/gtc/quaternion.hpp>
+#include<glm/common.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 using namespace std;
 
 Actor::Actor(MeshPtr mesh) : position(0.0f, 0.0f, 0.0f), scale(1.0f, 1.0f, 1.0f), rotation(0.0f), mesh(mesh) {
@@ -137,9 +142,10 @@ glm::mat4 Actor::getRotationMat() const{
     static const glm::vec3 zAxis = glm::vec3(0,0,1);
 
     glm::mat4 rotationMat(1.0f);
-    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.z), zAxis);
-    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.y), yAxis);
-    rotationMat = glm::rotate(rotationMat, glm::radians(rotation.x), xAxis);
+    glm::quat rotZ = glm::angleAxis(glm::radians(rotation.z), zAxis);
+    glm::quat rotY = glm::angleAxis(glm::radians(rotation.y), yAxis);
+    glm::quat rotX = glm::angleAxis(glm::radians(rotation.x), xAxis);
     
+    rotationMat = glm::toMat4(rotZ * rotY * rotX);
     return rotationMat;
 }

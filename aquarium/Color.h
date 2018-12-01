@@ -1,6 +1,8 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include <GL/glew.h>
+
 struct Color
 {
     float r;
@@ -11,6 +13,8 @@ struct Color
     {
         return r == other.r && g == other.g && b == other.b;
     }
+
+    void apply(GLuint uniformId);
 };
 
 namespace Colors{

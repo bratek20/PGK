@@ -1,10 +1,11 @@
 #include "Scene.h"
+#include "Color.h"
 
 Scene::Scene() : Actor(nullptr) {
     camera = Camera::create();
 
-    light = Light::create();
-    light->move({3, 5, -2});
+    light = Light::create(0.5f, Colors::WHITE, {0, 0, 1});
+    light->move({10, 100, 20});
 }
 
 ScenePtr Scene::create(){
@@ -16,7 +17,7 @@ ScenePtr Scene::create(){
 void Scene::render(){
     Mesh::setViewMat(camera->getViewMat());
     Mesh::setProjectionMat(camera->getProjectionMat());
-    Mesh::setLightPosition(light->getWorldPosition());
+    Mesh::applyLights();
     Actor::render(glm::mat4(1.0f));
 }
 

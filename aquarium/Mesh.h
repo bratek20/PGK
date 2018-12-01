@@ -14,6 +14,10 @@
 class Mesh;
 using MeshPtr = std::shared_ptr<Mesh>;
 
+class Light;
+using LightPtr = std::shared_ptr<Light>;
+using WeakLightPtr = std::shared_ptr<Light>;
+
 class Mesh {
     struct Shape{
         int off;
@@ -25,7 +29,11 @@ class Mesh {
     static GLuint viewMatId;
     static GLuint worldMatId;
     static GLuint meshColorId;
-    static GLuint lightId;
+
+    static GLuint lightPosId;
+    static GLuint lightPowerId;
+    static GLuint lightColorId;
+    static GLuint lightCoefficientsId;
 
     static GLuint programId;
     static GLuint vertexArrayIdx;
@@ -36,7 +44,7 @@ class Mesh {
 
     static glm::mat4 projectionMat;
     static glm::mat4 viewMat;
-    static glm::vec3 globalLightPos;
+    static std::vector<WeakLightPtr> lights;
 
     Shape shape;
     Color color;
@@ -52,13 +60,16 @@ public:
 
     static void setProjectionMat(const glm::mat4& mat);
     static void setViewMat(const glm::mat4& mat);
-    static void setLightPosition(const glm::vec3& globalPos);
+    
+    static void addLight(LightPtr light);
+    static void applyLights();
 
     void render(const glm::mat4& worldMat);
     std::vector<glm::vec3> getLocalCoords() const;
     std::vector<glm::vec3> getWorldCoords(const glm::mat4& worldMat) const;
 
 private:
+    
     Mesh(){}
 };
 
