@@ -18,14 +18,16 @@ ActorPtr Aquarium::makeWall(float width, float height, float depth, int dx, int 
 	return wall;
 }
 
-AquariumPtr Aquarium::create(float width, float height, float depth){
+AquariumPtr Aquarium::create(float width, float height, float depth, ActorCallback endGameCallback){
     auto aquarium = AquariumPtr(new Aquarium());
     aquarium->width = width;
     aquarium->height = height;
     aquarium->depth = depth;
+    aquarium->endGameCallback = endGameCallback;
 
     auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
 	floor->setScale({width, 1, depth});
+    floor->move({0, -0.5f, 0});
 	
 	aquarium->addChilds({
 		floor,
@@ -51,5 +53,6 @@ void Aquarium::onUpdate(){
 void Aquarium::spawnBubble(){
     auto random = Globals::random;
     auto bubble = Bubble::create(random(-width/2 + 2, width/2 - 2), 0, random(-depth/2 + 2, depth/2 - 2), random(1, 5));
+    bubble->setOnCollide(endGameCallback);
     addChild(bubble);
 }

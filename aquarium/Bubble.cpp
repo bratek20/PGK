@@ -10,6 +10,7 @@ BubblePtr Bubble::create(float x, float y, float z, float scale){
     bubble->scale = scale;
     bubble->move({x, y, z});
     bubble->setScale(glm::vec3(1,1,1) * scale);
+    bubble->setCollisionStatus(true);
     return bubble;
 }
 

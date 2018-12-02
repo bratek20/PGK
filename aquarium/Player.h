@@ -7,8 +7,13 @@ class Player;
 using PlayerPtr = std::shared_ptr<Player>;
 
 class Player : public Actor {
+    float aqWidth;
+    float aqHeight;
+    float aqDepth;
+    Callback winGameCallback;
+
 public:
-    static PlayerPtr create();
+    static PlayerPtr create(float aqWidth, float aqHeight, float aqDepth, Callback winGameCallback);
     
 protected:
     Player();

@@ -11,9 +11,10 @@ class Aquarium : public Actor {
     float height;
     float depth;
     float time;
+    ActorCallback endGameCallback;
 
 public:
-    static AquariumPtr create(float width, float height, float depth);
+    static AquariumPtr create(float width, float height, float depth, ActorCallback endGameCallback);
     
     void onUpdate() override;
 

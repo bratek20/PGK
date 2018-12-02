@@ -9,6 +9,7 @@
 
 class Actor;
 using ActorPtr = std::shared_ptr<Actor>;
+using Callback = std::function<void()>;
 using ActorCallback = std::function<void(ActorPtr)>;
 
 class Actor : public std::enable_shared_from_this<Actor> {
@@ -18,7 +19,7 @@ class Actor : public std::enable_shared_from_this<Actor> {
     MeshPtr mesh;   
     ActorCallback onCollideCallback;
     bool exists = true;
-    bool collides = true;
+    bool collides = false;
 
 public:
     static ActorPtr create(MeshPtr mesh);
@@ -41,8 +42,9 @@ public:
     void rotate(glm::vec3 dRot);
 
     void setOnCollide(std::function<void(ActorPtr)> onCollide);
-    void disableCollisions();
+    void setCollisionStatus(bool collides);
 
+    glm::vec3 getLocalPosition() const;
     glm::vec3 getWorldPosition() const;
     std::vector<glm::vec3> getWorldCoords() const;
     glm::vec3 getScale() const;

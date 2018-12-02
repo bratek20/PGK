@@ -1,6 +1,11 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <memory>
+
+class Actor;
+using ActorPtr = std::shared_ptr<Actor>;
+
 class Globals{
 public:
     static float previousFrameTime;
@@ -11,6 +16,8 @@ public:
     static void updateTime();
 
     static float random(float a = 0.0f, float b = 1.0f);
+
+    static ActorPtr player;    
 };
 
 #endif

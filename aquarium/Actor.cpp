@@ -43,11 +43,11 @@ void Actor::render(const glm::mat4& worldMat){
         c->render(myWorldMat);
     }
 
-    // if(mesh != nullptr && collides){
-    //     if(Collider::collide(mesh->getWorldCoords(myWorldMat))){
-    //        onCollide();
-    //     }
-    // }
+    if(mesh != nullptr && collides){
+        if(Collider::collide(shared_from_this())){
+           onCollide();
+        }
+    }
 }
 
 void Actor::addChild(ActorPtr child){
@@ -89,11 +89,14 @@ void Actor::setOnCollide(std::function<void(ActorPtr)> onCollide){
     onCollideCallback = onCollide;
 }
 
-void Actor::disableCollisions(){
-    collides = false;
+void Actor::setCollisionStatus(bool collides){
+    this->collides = collides;
 }
 
 void Actor::onCollide(){
+    if(!collides){
+        return;
+    }
     if(onCollideCallback){
         onCollideCallback(shared_from_this());
     }
@@ -102,8 +105,12 @@ void Actor::onCollide(){
     }
 }
 
+glm::vec3 Actor::getLocalPosition() const{
+    return position;
+}
+
 glm::vec3 Actor::getWorldPosition() const{
-    return getWorldMat() * glm::vec4(position, 1.0f);
+    return getWorldMat() * glm::vec4(0, 0, 0, 1);
 }
 
 std::vector<glm::vec3> Actor::getWorldCoords() const{

@@ -6,6 +6,7 @@
 float Globals::previousFrameTime;
 float Globals::currentFrameTime;
 float Globals::deltaTime;
+ActorPtr Globals::player;
 
 void Globals::init(){
     Globals::currentFrameTime = glfwGetTime();

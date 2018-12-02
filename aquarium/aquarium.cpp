@@ -23,7 +23,7 @@ void changeCameraSetting(){
 	}
 	else if(cameraSetting == 1){ // third person
 		player->addChild(camera);
-		camera->setPosition({0, 2, -3});
+		camera->setPosition({0, 1, -5});
 		camera->setRotation({-10, 0, 0});
 	}
 	else if(cameraSetting == 2){ // first person
@@ -33,17 +33,23 @@ void changeCameraSetting(){
 	}
 }
 
+bool shouldReset = false;
+void resetGame(bool won){
+	shouldReset = true;
+}
+
 void initGame(){
 	static const float WIDTH = 60;
 	static const float HEIGHT = 30;
 	static const float DEPTH = 100;
 
 	scene = Scene::create();
-	player = Player::create();
-	player->setPosition({0, HEIGHT/2, -DEPTH/2 * 0.8f});
+	Globals::player = player = Player::create(WIDTH, HEIGHT, DEPTH, [](){resetGame(true);});
 
 	scene->addChild(player);
-	scene->addChild(Aquarium::create(WIDTH, HEIGHT, DEPTH));
+	scene->addChild(Aquarium::create(WIDTH, HEIGHT, DEPTH, [](ActorPtr){resetGame(false);}));
+	
+	cameraSetting = 0;
 	changeCameraSetting();
 }
 
@@ -57,9 +63,14 @@ int main(){
 	
 	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
 
-	initGame();
+	resetGame(false);
 	
 	while(!Window::shouldClose()){
+		if(shouldReset){
+			initGame();
+			shouldReset = false;
+		}
+
 		Input::handle();
 
 		scene->update();

@@ -4,15 +4,23 @@
 #include "Light.h"
 
 #include <algorithm>
+using namespace std;
 
 Player::Player() : Actor(Mesh::create(Mesh::CUBE, Colors::RED)) {
 }
 
-PlayerPtr Player::create(){
+PlayerPtr Player::create(float aqWidth, float aqHeight, float aqDepth, Callback winGameCallback){
     auto player = PlayerPtr(new Player());
+    player->aqWidth = aqWidth * 0.95f;
+    player->aqHeight = aqHeight * 0.95f;
+    player->aqDepth = aqDepth * 0.95f;
+    player->winGameCallback = winGameCallback;
+    player->setPosition({0, aqHeight/2, -aqDepth/2 * 0.85f});
+
     auto light = Light::create(10, Colors::RED, {0, 1, 0});
     //light->move({0, 0, 2});
     player->addChild(light);
+
     return player;
 }
 
@@ -37,10 +45,25 @@ void Player::onUpdate(){
 
     auto newRot = getRotation() + glm::vec3(-Input::getMouseOffset().y * Globals::deltaTime, -Input::getMouseOffset().x * Globals::deltaTime, 0); 
     static const float MAX_X_DEG = 66;
-    //newRot.x = std::min(newRot.x, MAX_X_DEG);
-    //newRot.x = std::max(newRot.x, -MAX_X_DEG);
+    newRot.x = min(newRot.x, MAX_X_DEG);
+    newRot.x = max(newRot.x, -MAX_X_DEG);
     setRotation(newRot);
 
     step = getRotationMat() * glm::vec4(step, 0);
     move(step);
+
+    auto pos = getLocalPosition();
+    if(pos.z > aqDepth/2){
+        winGameCallback();
+    }
+
+    pos.x = min(pos.x, aqWidth/2);
+    pos.x = max(pos.x, -aqWidth/2);
+
+    pos.y = min(pos.y, aqHeight);
+    pos.y = max(pos.y, 0.0f);
+
+    pos.z = max(pos.z, -aqDepth/2);
+    
+    setPosition(pos);
 }

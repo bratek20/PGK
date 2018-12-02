@@ -46,9 +46,6 @@ Player.o: Player.cpp Player.h Actor.h
 Scene.o: Scene.cpp Scene.h Camera.h Light.h Actor.h
 	$(GCC) -c  $(INCLUDES) Scene.cpp
 
-Scene.o: Scene.cpp Scene.h Camera.h Light.h Actor.h
-	$(GCC) -c  $(INCLUDES) Scene.cpp
-
 Bubble.o: Bubble.cpp Bubble.h Actor.h
 	$(GCC) -c  $(INCLUDES) Bubble.cpp
 

@@ -4,6 +4,7 @@
 
 #include <common/shader.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
@@ -184,6 +185,10 @@ void Mesh::addLight(LightPtr light){
 }
 
 void Mesh::applyLights(){
+    lights.erase(
+        std::remove_if(lights.begin(), lights.end(), [](WeakLightPtr l){return l.expired();}),
+        lights.end());
+
     int size = lights.size();
     glUniform1i(lightsNumId, size); 
 
@@ -192,10 +197,11 @@ void Mesh::applyLights(){
     glm::vec3 color[size];
     glm::vec3 coefficient[size];
     for(int i=0;i<size;i++){
-        pos[i] = lights[i]->getWorldPosition();
-        power[i] = lights[i]->getPower();
-        color[i] = static_cast<glm::vec3>(lights[i]->getColor());
-        coefficient[i] = lights[i]->getCoefficients();
+        auto light = lights[i].lock(); 
+        pos[i] = light->getWorldPosition();
+        power[i] = light->getPower();
+        color[i] = static_cast<glm::vec3>(light->getColor());
+        coefficient[i] = light->getCoefficients();
     }
 
     glUniform3fv(lightPosId, size, glm::value_ptr(pos[0]));

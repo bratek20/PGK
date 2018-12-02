@@ -16,7 +16,7 @@ using MeshPtr = std::shared_ptr<Mesh>;
 
 class Light;
 using LightPtr = std::shared_ptr<Light>;
-using WeakLightPtr = std::shared_ptr<Light>;
+using WeakLightPtr = std::weak_ptr<Light>;
 
 class Mesh {
     struct Shape{
