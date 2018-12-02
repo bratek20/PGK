@@ -14,6 +14,7 @@ BubblePtr Bubble::create(float x, float y, float z, float scale){
     bubble->setCollisionStatus(true);
     if(scale < 1.2f){
         auto light = Light::create(0.75f, bubble->mesh->getColor(), {0, 0.1f, 0});
+        light->move({0,scale,0});
         bubble->addChild(light);
     }
     return bubble;

@@ -30,12 +30,3 @@ glm::mat4 Camera::getProjectionMat(){
                 400.0f             // Far clipping plane. Keep as little as possible.
             );
 }
-
-#include <iostream>
-void Camera::onUpdate(){
-    glm::vec3 localUp = getLocalMat() * glm::vec4(LOCAL_UP, 1);
-    glm::vec3 globalUp = getWorldMat() * glm::vec4(LOCAL_UP, 1);
-    
-    float angle = glm::acos(glm::dot(glm::normalize(localUp), glm::normalize(globalUp)));
-    //std::cout << glm::degrees(angle) << "\n";
-}

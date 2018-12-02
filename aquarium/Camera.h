@@ -16,8 +16,6 @@ public:
 
 protected:
     Camera();
-
-    void onUpdate() override;
     
 private:
     ActorPtr lookPoint;
