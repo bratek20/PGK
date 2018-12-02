@@ -36,6 +36,7 @@ namespace Colors{
     constexpr Color YELLOW = {1.0f, 1.0f, 0.0f};
     constexpr Color MAGENTA = {1.0f, 0.0f, 1.0f};
     constexpr Color CYAN = {0.0f, 1.0f, 1.0f};
+    constexpr Color SAND = {0.93f, 0.83f, 0.43f};
 }
 
 

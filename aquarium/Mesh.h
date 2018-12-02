@@ -53,7 +53,8 @@ class Mesh {
 public:
     static Shape CUBE;
     static Shape SPHERE;
-
+    static const int MAX_LIGHTS;
+    
     static MeshPtr create(Shape shape, Color color);
 
     static void init(); 
@@ -68,6 +69,7 @@ public:
     void render(const glm::mat4& worldMat);
     std::vector<glm::vec3> getLocalCoords() const;
     std::vector<glm::vec3> getWorldCoords(const glm::mat4& worldMat) const;
+    Color getColor() const;
 
 private:
     

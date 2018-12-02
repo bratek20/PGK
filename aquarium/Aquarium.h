@@ -12,11 +12,13 @@ class Aquarium : public Actor {
     float depth;
     float time;
     ActorCallback endGameCallback;
-
+    ActorPtr frontWall;
+    
 public:
     static AquariumPtr create(float width, float height, float depth, ActorCallback endGameCallback);
     
     void onUpdate() override;
+    void setFrontWallStatus(bool isEnabled);
 
 protected:
     Aquarium();

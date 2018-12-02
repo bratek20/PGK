@@ -119,6 +119,7 @@ std::vector<GLfloat> Mesh::vertexNormalsData = {
 
 Mesh::Shape Mesh::CUBE = { 0, 108, GL_TRIANGLES };
 Mesh::Shape Mesh::SPHERE;
+const int Mesh::MAX_LIGHTS = 10;
 
 MeshPtr Mesh::create(Shape shape, Color color){
     auto mesh = MeshPtr(new Mesh());
@@ -128,7 +129,7 @@ MeshPtr Mesh::create(Shape shape, Color color){
 }
 
 void Mesh::init(){
-    auto sphereMesh = SphereGenerator::generate(10, 10, 0.5f);
+    auto sphereMesh = SphereGenerator::generate(30, 30, 0.5f);
     SPHERE = {108, sphereMesh.size(), GL_TRIANGLES};
     vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
     vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
@@ -189,7 +190,7 @@ void Mesh::applyLights(){
         std::remove_if(lights.begin(), lights.end(), [](WeakLightPtr l){return l.expired();}),
         lights.end());
 
-    int size = lights.size();
+    int size = min(static_cast<int>(lights.size()), MAX_LIGHTS);
     glUniform1i(lightsNumId, size); 
 
     glm::vec3 pos[size];
@@ -254,4 +255,8 @@ std::vector<glm::vec3> Mesh::getWorldCoords(const glm::mat4& worldMat) const{
         globalCoords.push_back(worldMat * glm::vec4(localCoord, 1.0f));
     }
     return globalCoords;
+}
+
+Color Mesh::getColor() const{
+    return color;
 }

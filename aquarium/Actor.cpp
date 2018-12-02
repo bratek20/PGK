@@ -35,7 +35,7 @@ void Actor::update(){
 
 void Actor::render(const glm::mat4& worldMat){
     auto myWorldMat = worldMat * getLocalMat();
-    if(mesh != nullptr){
+    if(mesh != nullptr && isVisible){
         mesh->render(myWorldMat);
     }
 
@@ -48,6 +48,10 @@ void Actor::render(const glm::mat4& worldMat){
            onCollide();
         }
     }
+}
+
+void Actor::setVisibleStatus(bool isVisible){
+    this->isVisible = isVisible;
 }
 
 void Actor::addChild(ActorPtr child){

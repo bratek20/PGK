@@ -18,7 +18,7 @@ uniform vec3 LightDistanceCoefficients[10];
 void main(){
 	// Material properties
 	vec3 MaterialDiffuseColor = MeshColor;
-	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
+	vec3 MaterialAmbientColor = vec3(0.01,0.01,0.01) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
 	color = vec3(0,0,0);

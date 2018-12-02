@@ -25,14 +25,16 @@ AquariumPtr Aquarium::create(float width, float height, float depth, ActorCallba
     aquarium->depth = depth;
     aquarium->endGameCallback = endGameCallback;
 
-    auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
+    auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::SAND));
 	floor->setScale({width, 1, depth});
     floor->move({0, -0.5f, 0});
 	
-	aquarium->addChilds({
+    aquarium->frontWall = makeWall(width, height, depth, -1, 0);
+	
+    aquarium->addChilds({
 		floor,
+        aquarium->frontWall,
 		makeWall(width, height, depth, 1, 0),
-		makeWall(width, height, depth, -1, 0),
 		makeWall(width, height, depth, 0, 1),
 		makeWall(width, height, depth, 0, -1)
 	});
@@ -48,11 +50,21 @@ void Aquarium::onUpdate(){
         spawnBubble();
         time = 0.0f;
     }
+
+    for(auto child : childs){
+        if(child->getLocalPosition().y > height){
+            child->destroy();
+        }
+    }
+}
+
+void Aquarium::setFrontWallStatus(bool isEnabled){
+    frontWall->setVisibleStatus(isEnabled);
 }
 
 void Aquarium::spawnBubble(){
     auto random = Globals::random;
-    auto bubble = Bubble::create(random(-width/2 + 2, width/2 - 2), 0, random(-depth/2 + 2, depth/2 - 2), random(1, 5));
+    auto bubble = Bubble::create(random(-width/2 + 2, width/2 - 2), 0, random(-depth/2 + 2, depth/2 - 2), random(1, 3.5f));
     bubble->setOnCollide(endGameCallback);
     addChild(bubble);
 }

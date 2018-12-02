@@ -9,8 +9,13 @@
 
 using namespace std;
 
+static const float WIDTH = 60;
+static const float HEIGHT = 30;
+static const float DEPTH = 100;
+
 ScenePtr scene;
 PlayerPtr player;
+AquariumPtr aquarium;
 
 int cameraSetting = 0;
 void changeCameraSetting(){
@@ -18,18 +23,21 @@ void changeCameraSetting(){
 	cameraSetting = (cameraSetting + 1)%3;
 	if(cameraSetting == 0){ // out of aquarium
 		scene->addChild(camera);
-		camera->setPosition({0, 4, -10});
-		camera->setRotation({0, 0, 0});
+		camera->setPosition({-2.5f*WIDTH, HEIGHT/2, 0});
+		camera->setRotation({0, 90, 0});
+		aquarium->setFrontWallStatus(false);
 	}
 	else if(cameraSetting == 1){ // third person
 		player->addChild(camera);
-		camera->setPosition({0, 1, -5});
-		camera->setRotation({-10, 0, 0});
+		camera->setPosition({0, 2.5f, -4});
+		camera->setRotation({10, 0, 0});
+		aquarium->setFrontWallStatus(true);
 	}
 	else if(cameraSetting == 2){ // first person
 		player->addChild(camera);
 		camera->setPosition({0, 1, 1});
 		camera->setRotation({0, 0, 0});
+		aquarium->setFrontWallStatus(true);
 	}
 }
 
@@ -39,15 +47,11 @@ void resetGame(bool won){
 }
 
 void initGame(){
-	static const float WIDTH = 60;
-	static const float HEIGHT = 30;
-	static const float DEPTH = 100;
-
 	scene = Scene::create();
 	Globals::player = player = Player::create(WIDTH, HEIGHT, DEPTH, [](){resetGame(true);});
 
-	scene->addChild(player);
-	scene->addChild(Aquarium::create(WIDTH, HEIGHT, DEPTH, [](ActorPtr){resetGame(false);}));
+	aquarium = Aquarium::create(WIDTH, HEIGHT, DEPTH, [](ActorPtr){resetGame(false);});
+	scene->addChilds({player, aquarium});
 	
 	cameraSetting = 0;
 	changeCameraSetting();

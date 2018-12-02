@@ -13,13 +13,11 @@ using Callback = std::function<void()>;
 using ActorCallback = std::function<void(ActorPtr)>;
 
 class Actor : public std::enable_shared_from_this<Actor> {
-    glm::vec3 position;
-    glm::vec3 scale;
-    glm::vec3 rotation;
-    MeshPtr mesh;   
     ActorCallback onCollideCallback;
+
     bool exists = true;
     bool collides = false;
+    bool isVisible = true;
 
 public:
     static ActorPtr create(MeshPtr mesh);
@@ -28,6 +26,7 @@ public:
     void destroy();
     void update();
     void render(const glm::mat4& worldMat);
+    void setVisibleStatus(bool isVisible);
 
     void addChild(ActorPtr child);
     void addChilds(std::vector<ActorPtr> childs);
@@ -51,6 +50,11 @@ public:
     glm::vec3 getRotation() const;
     
 protected:
+    glm::vec3 position;
+    glm::vec3 scale;
+    glm::vec3 rotation;
+    MeshPtr mesh;   
+    
     std::weak_ptr<Actor> parent; 
     std::vector<ActorPtr> childs;
     Actor(MeshPtr mesh);
