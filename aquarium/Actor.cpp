@@ -109,6 +109,10 @@ void Actor::onCollide(){
     }
 }
 
+MeshPtr Actor::getMesh() const{
+    return mesh;
+}
+
 glm::vec3 Actor::getLocalPosition() const{
     return position;
 }

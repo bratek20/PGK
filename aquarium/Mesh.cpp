@@ -13,6 +13,7 @@ GLuint Mesh::MVPId;
 GLuint Mesh::viewMatId;
 GLuint Mesh::worldMatId;
 GLuint Mesh::meshColorId;
+GLuint Mesh::reverseNormalId;
 
 GLuint Mesh::lightsNumId;
 GLuint Mesh::lightPosId;
@@ -141,6 +142,7 @@ void Mesh::init(){
     viewMatId = glGetUniformLocation(programId, "V");
 	worldMatId = glGetUniformLocation(programId, "M");
     meshColorId = glGetUniformLocation(programId, "MeshColor");
+    reverseNormalId = glGetUniformLocation(programId, "ReverseNormal");
 
     lightsNumId = glGetUniformLocation(programId, "LightsNum");
     lightPosId = glGetUniformLocation(programId, "LightPosition_worldspace");
@@ -215,6 +217,7 @@ void Mesh::render(const glm::mat4& worldMat){
     glm::mat4 MVP = projectionMat * viewMat * worldMat;
     glUniformMatrix4fv(worldMatId, 1, GL_FALSE, &worldMat[0][0]);
     glUniformMatrix4fv(MVPId, 1, GL_FALSE, &MVP[0][0]);
+    glUniform1i(reverseNormalId, hasNormalsReversed ? 1 : 0);
 
     color.apply(meshColorId);
 
@@ -255,6 +258,10 @@ std::vector<glm::vec3> Mesh::getWorldCoords(const glm::mat4& worldMat) const{
         globalCoords.push_back(worldMat * glm::vec4(localCoord, 1.0f));
     }
     return globalCoords;
+}
+
+void Mesh::reverseNormals(){
+    hasNormalsReversed = true;
 }
 
 Color Mesh::getColor() const{

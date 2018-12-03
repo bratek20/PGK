@@ -29,6 +29,7 @@ class Mesh {
     static GLuint viewMatId;
     static GLuint worldMatId;
     static GLuint meshColorId;
+    static GLuint reverseNormalId;
 
     static GLuint lightsNumId;
     static GLuint lightPosId;
@@ -49,6 +50,7 @@ class Mesh {
 
     Shape shape;
     Color color;
+    bool hasNormalsReversed = false;
 
 public:
     static Shape CUBE;
@@ -69,6 +71,8 @@ public:
     void render(const glm::mat4& worldMat);
     std::vector<glm::vec3> getLocalCoords() const;
     std::vector<glm::vec3> getWorldCoords(const glm::mat4& worldMat) const;
+    
+    void reverseNormals();
     Color getColor() const;
 
 private:

@@ -13,6 +13,7 @@ uniform mat4 V;
 uniform mat4 M;
 uniform int LightsNum;
 uniform vec3 LightPosition_worldspace[10];
+uniform int ReverseNormal;
 
 void main(){
 	gl_Position =  MVP * vec4(vertexPosition_modelspace, 1);
@@ -20,6 +21,10 @@ void main(){
 	// Position of the vertex, in worldspace : M * position
 	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
 	
+	vec3 normal_modelspace = vertexNormal_modelspace;
+	if(ReverseNormal != 0){
+		normal_modelspace = -normal_modelspace;
+	}
 	// Vector that goes from the vertex to the camera, in camera space.
 	// In camera space, the camera is at the origin (0,0,0).
 	vec3 vertexPosition_cameraspace = ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
@@ -31,8 +36,7 @@ void main(){
 		LightDirection_cameraspace[i] = LightPosition_cameraspace + EyeDirection_cameraspace;
 	}
 
-	
 	// Normal of the the vertex, in camera space  
-	//Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
-	Normal_cameraspace = mat3(V) * mat3(transpose(inverse(M))) * vertexNormal_modelspace;
+	//Normal_cameraspace = ( V * M * vec4(normal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
+	Normal_cameraspace = mat3(V) * mat3(transpose(inverse(M))) * normal_modelspace;
 }

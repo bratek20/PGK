@@ -60,6 +60,7 @@ protected:
     Actor(MeshPtr mesh);
     virtual void onUpdate() {};
 
+    MeshPtr getMesh() const;
     glm::mat4 getWorldMat() const;
     glm::mat4 getLocalMat() const;
     glm::mat4 getPositionMat() const;
