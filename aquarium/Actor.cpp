@@ -136,6 +136,10 @@ glm::vec3 Actor::getRotation() const{
     return rotation;
 }
 
+bool Actor::isDestroyed() const{
+    return exists;
+}
+
 glm::mat4 Actor::getWorldMat() const{
     if(parent.expired()){
         return getLocalMat();

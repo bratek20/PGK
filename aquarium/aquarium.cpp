@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "Aquarium.h"
 
+#include <iostream>
+
 using namespace std;
 
 static const float WIDTH = 60;
@@ -42,15 +44,25 @@ void changeCameraSetting(){
 }
 
 bool shouldReset = false;
+int level = 1;
+int points = 0;
 void resetGame(bool won){
+	if(aquarium != nullptr){
+		points += aquarium->getPoints();
+	}
+	cout << "Prev| Level: " << level << ", points: " << points << endl;
+	
 	shouldReset = true;
+	level = won ? level + 1 : 1;
+	points = won ? points : 0;
+	cout << "Cur| Level: " << level << ", points: " << points << endl << endl;
 }
 
 void initGame(){
 	scene = Scene::create();
 	Globals::player = player = Player::create(WIDTH, HEIGHT, DEPTH, [](){resetGame(true);});
 
-	aquarium = Aquarium::create(WIDTH, HEIGHT, DEPTH, [](ActorPtr){resetGame(false);});
+	aquarium = Aquarium::create(WIDTH, HEIGHT, DEPTH, level, [](ActorPtr){resetGame(false);});
 	scene->addChilds({player, aquarium});
 	
 	cameraSetting = 0;

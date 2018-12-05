@@ -48,6 +48,7 @@ public:
     std::vector<glm::vec3> getWorldCoords() const;
     glm::vec3 getScale() const;
     glm::vec3 getRotation() const;
+    bool isDestroyed() const;
     
 protected:
     glm::vec3 position;
