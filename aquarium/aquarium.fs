@@ -2,13 +2,13 @@
 
 in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
+in vec3 VertexColor;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace[10];
 
 // Ouput data
 out vec3 color;
 
-uniform vec3 MeshColor;
 uniform int LightsNum;
 uniform vec3 LightPosition_worldspace[10];
 uniform vec3 LightColor[10];
@@ -17,7 +17,7 @@ uniform vec3 LightDistanceCoefficients[10];
 
 void main(){
 	// Material properties
-	vec3 MaterialDiffuseColor = MeshColor;
+	vec3 MaterialDiffuseColor = VertexColor;
 	vec3 MaterialAmbientColor = vec3(0.01,0.01,0.01) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 

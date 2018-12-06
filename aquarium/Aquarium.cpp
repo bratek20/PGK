@@ -42,7 +42,10 @@ AquariumPtr Aquarium::create(float width, float height, float depth, int level, 
 	
     aquarium->frontWall = makeWall(width, height, depth, -1, 0);
 	aquarium->bubbles = Actor::create(nullptr);
+    aquarium->bubbles->setInstancedBufferStatus(true);
     aquarium->shiningBubbles = Actor::create(nullptr);
+    aquarium->shiningBubbles->setInstancedBufferStatus(true);
+    
     aquarium->addChilds({
 		floor,
         aquarium->frontWall,

@@ -30,6 +30,7 @@ class Mesh {
     static GLuint worldMatId;
     static GLuint meshColorId;
     static GLuint reverseNormalId;
+    static GLuint isInstancedId;
 
     static GLuint lightsNumId;
     static GLuint lightPosId;
@@ -69,6 +70,7 @@ public:
     static void applyLights();
 
     void render(const glm::mat4& worldMat);
+    static void renderInstanced(const glm::mat4& worldMat, std::vector<MeshPtr> meshes, std::vector<glm::vec3> translations, std::vector<glm::vec3> scales);
     std::vector<glm::vec3> getLocalCoords() const;
     std::vector<glm::vec3> getWorldCoords(const glm::mat4& worldMat) const;
     
@@ -76,8 +78,10 @@ public:
     Color getColor() const;
 
 private:
-    
     Mesh(){}
+
+    static void applyCommonUniforms(const glm::mat4& worldMat);
+    static void applyShape(const Shape& shape);
 };
 
 #endif

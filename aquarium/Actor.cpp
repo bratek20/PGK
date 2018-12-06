@@ -39,8 +39,28 @@ void Actor::render(const glm::mat4& worldMat){
         mesh->render(myWorldMat);
     }
 
+    if(isInstancedBuffer && childsNum() > 0){
+        vector<MeshPtr> meshes;
+        vector<glm::vec3> translations;
+        vector<glm::vec3> scales;
+        for(auto c : childs){
+            meshes.push_back(c->mesh);
+            translations.push_back(c->getLocalPosition());
+            scales.push_back(c->getScale());
+        }
+
+        Mesh::renderInstanced(worldMat, meshes, translations, scales);
+    }
+    else{
+        for(auto& c : childs){
+            c->render(myWorldMat);
+        }
+    }
+}
+
+void Actor::checkCollisions(){
     for(auto& c : childs){
-        c->render(myWorldMat);
+        c->checkCollisions();
     }
 
     if(mesh != nullptr && collides){
@@ -52,6 +72,10 @@ void Actor::render(const glm::mat4& worldMat){
 
 void Actor::setVisibleStatus(bool isVisible){
     this->isVisible = isVisible;
+}
+
+void Actor::setInstancedBufferStatus(bool isInstancedBuffer){
+    this->isInstancedBuffer = isInstancedBuffer;
 }
 
 void Actor::addChild(ActorPtr child){

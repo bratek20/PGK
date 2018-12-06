@@ -18,6 +18,7 @@ class Actor : public std::enable_shared_from_this<Actor> {
     bool exists = true;
     bool collides = false;
     bool isVisible = true;
+    bool isInstancedBuffer = false;
 
 public:
     static ActorPtr create(MeshPtr mesh);
@@ -26,7 +27,9 @@ public:
     void destroy();
     void update();
     void render(const glm::mat4& worldMat);
+    void checkCollisions();
     void setVisibleStatus(bool isVisible);
+    void setInstancedBufferStatus(bool isInstancedBuffer);
 
     void addChild(ActorPtr child);
     void addChilds(std::vector<ActorPtr> childs);

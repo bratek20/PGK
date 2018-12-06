@@ -19,6 +19,7 @@ void Scene::render(){
     Mesh::setProjectionMat(camera->getProjectionMat());
     Mesh::applyLights();
     Actor::render(glm::mat4(1.0f));
+    checkCollisions();
 }
 
 CameraPtr Scene::getCamera() const{
