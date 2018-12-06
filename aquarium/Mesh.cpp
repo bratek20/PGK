@@ -27,6 +27,9 @@ GLuint Mesh::programId;
 GLuint Mesh::vertexArrayIdx;
 GLuint Mesh::vertexBufferIdx;
 GLuint Mesh::vertexNormalsBufferIdx;
+GLuint Mesh::instancedVertexTransIdx;
+GLuint Mesh::instancedVertexScaleIdx;
+GLuint Mesh::instancedVertexColorIdx;
 
 glm::mat4 Mesh::projectionMat;
 glm::mat4 Mesh::viewMat;
@@ -165,12 +168,19 @@ void Mesh::init(){
 	glBindBuffer(GL_ARRAY_BUFFER, vertexNormalsBufferIdx);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexData.size(), vertexData.data(), GL_STATIC_DRAW);
 
+    glGenBuffers(1, &instancedVertexTransIdx);
+    glGenBuffers(1, &instancedVertexScaleIdx);
+    glGenBuffers(1, &instancedVertexColorIdx);
+
     setProjectionMat(glm::mat4(1.0f));
     setViewMat(glm::mat4(1.0f));
 }
 
 void Mesh::clear(){
     glDisableVertexAttribArray(0);
+    glDeleteBuffers(1, &instancedVertexTransIdx);
+    glDeleteBuffers(1, &instancedVertexScaleIdx);
+	glDeleteBuffers(1, &instancedVertexColorIdx);
     glDeleteBuffers(1, &vertexNormalsBufferIdx);
 	glDeleteBuffers(1, &vertexBufferIdx);
 	glDeleteProgram(programId);
@@ -239,10 +249,6 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
     auto shape = meshes[0]->shape;
     applyShape(shape);
 
-    GLuint instancedVertexTransIdx;
-    GLuint instancedVertexScaleIdx;
-    GLuint instancedVertexColorIdx;
-
     GLfloat instancedTrans[meshes.size() * 3];
     GLfloat instancedScale[meshes.size() * 3];
     GLfloat instancedColor[meshes.size() * 3];
@@ -261,17 +267,15 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
         instancedColor[3*i+2] = meshes[i]->color.b;
     }
 
-    glGenBuffers(1, &instancedVertexTransIdx);
+
 	glBindBuffer(GL_ARRAY_BUFFER, instancedVertexTransIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedTrans), instancedTrans, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedTrans), instancedTrans, GL_STREAM_DRAW);
 
-    glGenBuffers(1, &instancedVertexScaleIdx);
 	glBindBuffer(GL_ARRAY_BUFFER, instancedVertexScaleIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedScale), instancedScale, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedScale), instancedScale, GL_STREAM_DRAW);
 
-    glGenBuffers(1, &instancedVertexColorIdx);
 	glBindBuffer(GL_ARRAY_BUFFER, instancedVertexColorIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedColor), instancedColor, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedColor), instancedColor, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, instancedVertexTransIdx);
     glEnableVertexAttribArray(2);
@@ -305,18 +309,12 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
         0,                               
         (void*)0                      
     );
-
-    glVertexAttribDivisor(0, 0);
-    glVertexAttribDivisor(1, 0);  
+ 
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1); 
     glVertexAttribDivisor(4, 1);   
     
     glDrawArraysInstanced(shape.type,  0, shape.size, meshes.size());
-
-    glDeleteBuffers(1, &instancedVertexTransIdx);
-    glDeleteBuffers(1, &instancedVertexScaleIdx);
-	glDeleteBuffers(1, &instancedVertexColorIdx);
 }
 
 void Mesh::applyCommonUniforms(const glm::mat4& worldMat){
@@ -359,7 +357,7 @@ std::vector<glm::vec3> Mesh::getLocalCoords() const{
 std::vector<glm::vec3> Mesh::getWorldCoords(const glm::mat4& worldMat) const{
     std::vector<glm::vec3> globalCoords;
     for(auto& localCoord : getLocalCoords()){
-        globalCoords.push_back(worldMat * glm::vec4(localCoord, 1.0f));
+        globalCoords.push_back(static_cast<glm::vec3>(worldMat * glm::vec4(localCoord, 1.0f)));
     }
     return globalCoords;
 }

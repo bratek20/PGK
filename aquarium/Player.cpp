@@ -49,7 +49,7 @@ void Player::onUpdate(){
     newRot.x = max(newRot.x, -MAX_X_DEG);
     setRotation(newRot);
 
-    step = getRotationMat() * glm::vec4(step, 0);
+    step = static_cast<glm::vec3>(getRotationMat() * glm::vec4(step, 0));
     move(step);
 
     auto pos = getLocalPosition();

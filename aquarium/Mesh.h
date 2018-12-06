@@ -43,6 +43,9 @@ class Mesh {
     static GLuint vertexArrayIdx;
     static GLuint vertexBufferIdx;
     static GLuint vertexNormalsBufferIdx;
+    static GLuint instancedVertexTransIdx;
+    static GLuint instancedVertexScaleIdx;
+    static GLuint instancedVertexColorIdx;
     static std::vector<GLfloat> vertexData;
     static std::vector<GLfloat> vertexNormalsData;
 

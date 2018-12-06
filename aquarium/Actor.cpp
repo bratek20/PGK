@@ -142,7 +142,7 @@ glm::vec3 Actor::getLocalPosition() const{
 }
 
 glm::vec3 Actor::getWorldPosition() const{
-    return getWorldMat() * glm::vec4(0, 0, 0, 1);
+    return static_cast<glm::vec3>(getWorldMat() * glm::vec4(0, 0, 0, 1));
 }
 
 std::vector<glm::vec3> Actor::getWorldCoords() const{
