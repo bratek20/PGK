@@ -14,6 +14,7 @@ uniform vec3 LightPosition_worldspace[10];
 uniform vec3 LightColor[10];
 uniform float LightPower[10];
 uniform vec3 LightDistanceCoefficients[10];
+uniform vec3 PlayerPosition_worldspace;
 
 void main(){
 	// Material properties
@@ -60,4 +61,8 @@ void main(){
 			// Specular : reflective highlight, like a mirror
 			+ MaterialSpecularColor * LightColor[i] * LightPower[i] * pow(cosAlpha,5) / distanceLoss;
 	}
+
+	float distToPlayer = length( PlayerPosition_worldspace - Position_worldspace );
+	color = color + vec3(0,0, 1 - pow(2.71, -0.01*distToPlayer));
+	color = color * pow(2.71, -0.02*distToPlayer);
 }

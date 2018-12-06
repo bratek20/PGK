@@ -8,6 +8,7 @@
 #include "Aquarium.h"
 
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ static const float DEPTH = 100;
 ScenePtr scene;
 PlayerPtr player;
 AquariumPtr aquarium;
-
+glm::vec3 thirdPersonCamPos = {0, 2.5f, -4};
 int cameraSetting = 0;
 void changeCameraSetting(){
 	auto camera = scene->getCamera();
@@ -31,7 +32,7 @@ void changeCameraSetting(){
 	}
 	else if(cameraSetting == 1){ // third person
 		player->addChild(camera);
-		camera->setPosition({0, 2.5f, -4});
+		camera->setPosition(thirdPersonCamPos);
 		camera->setRotation({10, 0, 0});
 		aquarium->setFrontWallStatus(true);
 	}
@@ -41,6 +42,26 @@ void changeCameraSetting(){
 		camera->setRotation({0, 0, 0});
 		aquarium->setFrontWallStatus(true);
 	}
+}
+
+float zoomValue = 1;
+void zoomCamera(){
+	
+	if(cameraSetting == 1){ // third person
+		scene->getCamera()->setPosition(thirdPersonCamPos * zoomValue);
+	}
+}
+
+void zoomIn(){
+	zoomValue -= 0.25f;
+	zoomValue = max(1.0f, zoomValue);
+	zoomCamera();
+}
+
+void zoomOut(){
+	zoomValue += 0.25f;
+	zoomValue = min(2.0f, zoomValue);
+	zoomCamera();
 }
 
 bool shouldReset = false;
@@ -78,6 +99,8 @@ int main(){
 	Globals::init();
 	
 	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
+	Input::onKeyPressed(GLFW_KEY_O, zoomIn);
+	Input::onKeyPressed(GLFW_KEY_P, zoomOut);
 
 	resetGame(false);
 	
@@ -92,6 +115,7 @@ int main(){
 		scene->update();
 
         Window::clear();
+		Mesh::applyPlayerPosition(player->getWorldPosition());
 		scene->render();
 		Window::swapBuffers();
 		

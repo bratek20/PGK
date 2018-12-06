@@ -32,6 +32,7 @@ class Mesh {
     static GLuint reverseNormalId;
     static GLuint isInstancedId;
 
+    static GLuint playerPositionId;
     static GLuint lightsNumId;
     static GLuint lightPosId;
     static GLuint lightPowerId;
@@ -68,6 +69,7 @@ public:
     
     static void addLight(LightPtr light);
     static void applyLights();
+    static void applyPlayerPosition(glm::vec3 worldPlayerPos);
 
     void render(const glm::mat4& worldMat);
     static void renderInstanced(const glm::mat4& worldMat, std::vector<MeshPtr> meshes, std::vector<glm::vec3> translations, std::vector<glm::vec3> scales);

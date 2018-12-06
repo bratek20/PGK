@@ -16,6 +16,7 @@ GLuint Mesh::meshColorId;
 GLuint Mesh::reverseNormalId;
 GLuint Mesh::isInstancedId;
 
+GLuint Mesh::playerPositionId;
 GLuint Mesh::lightsNumId;
 GLuint Mesh::lightPosId;
 GLuint Mesh::lightPowerId;
@@ -146,6 +147,7 @@ void Mesh::init(){
     reverseNormalId = glGetUniformLocation(programId, "ReverseNormal");
     isInstancedId = glGetUniformLocation(programId, "IsInstanced");
 
+    playerPositionId = glGetUniformLocation(programId, "PlayerPosition_worldspace");
     lightsNumId = glGetUniformLocation(programId, "LightsNum");
     lightPosId = glGetUniformLocation(programId, "LightPosition_worldspace");
     lightPowerId = glGetUniformLocation(programId, "LightPower");
@@ -213,6 +215,10 @@ void Mesh::applyLights(){
     glUniform1fv(lightPowerId, size, power);
     glUniform3fv(lightColorId, size, glm::value_ptr(color[0]));
     glUniform3fv(lightCoefficientsId, size, glm::value_ptr(coefficient[0]));
+}
+
+void Mesh::applyPlayerPosition(glm::vec3 worldPlayerPos){
+    glUniform3f(playerPositionId, worldPlayerPos.x, worldPlayerPos.y, worldPlayerPos.z); 
 }
 
 void Mesh::render(const glm::mat4& worldMat){

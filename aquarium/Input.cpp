@@ -1,5 +1,4 @@
 #include "Input.h"
-#include "Window.h"
 
 bool Input::isKeyPressed[Input::KEY_PRESSED_SIZE];
 std::function<void()> Input::pressedCallback[Input::KEY_PRESSED_SIZE];
