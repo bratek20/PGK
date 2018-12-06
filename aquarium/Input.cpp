@@ -16,7 +16,7 @@ void Input::init(){
 }
 
 void Input::handle(){
-    mouseOffset = glm::vec3(0,0,0);
+    mouseOffset = glm::vec2(0,0);
     glfwPollEvents();
 }
 
