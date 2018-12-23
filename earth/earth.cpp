@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Color.h"
 #include "Player.h"
-#include "DataReader.h"
+#include "MapSegment.h"
 
 #include <iostream>
 #include <algorithm>
@@ -64,30 +64,32 @@ int main(){
         return -1;
     }
 	Input::init();
-    Mesh::init();
+    //Mesh::init();
 	Globals::init();
+	MapSegment::init();
 	
 	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
 	Input::onKeyPressed(GLFW_KEY_O, zoomIn);
 	Input::onKeyPressed(GLFW_KEY_P, zoomOut);
 	
-	DataReader::read("data/N50E016.hgt");
+	auto map = MapSegment::create("data/N50E016.hgt");
 	
-	initGame();
+	//initGame();
 	while(!Window::shouldClose()){
 		Input::handle();
 
-		scene->update();
+		//scene->update();
 
         Window::clear();
-		Mesh::applyPlayerPosition(player->getWorldPosition());
-		scene->render();
+		map->render();
+		//Mesh::applyPlayerPosition(player->getWorldPosition());
+		//scene->render();
 		Window::swapBuffers();
 		
 		Globals::updateTime();
 	}
 
-    Mesh::clear();
+    MapSegment::clear();
 	Window::close();
 	return 0;
 }

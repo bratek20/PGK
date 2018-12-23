@@ -8,7 +8,7 @@ class DataReader{
 public:
     static std::vector<short> read(std::string fileName); 
 private:
-    static short swapBites(char val);
+    static short swapBytes(short val);
 };
 
 #endif
