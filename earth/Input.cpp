@@ -11,7 +11,7 @@ void Input::init(){
     glfwSetKeyCallback(Window::getPtr(), onKeyClicked);
     glfwSetCursorPosCallback(Window::getPtr(), onMouseMoved);
     glfwSetMouseButtonCallback(Window::getPtr(), onMouseClicked);
-    glfwSetInputMode(Window::getPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(Window::getPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     onKeyPressed(GLFW_KEY_ESCAPE, [](){glfwSetWindowShouldClose(Window::getPtr(), GL_TRUE);});
 }
 

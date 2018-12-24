@@ -7,12 +7,13 @@
 #include <string>
 
 class Map {
-    std::vector<std::vector<MapSegmentPtr>> semgents;
+    glm::vec2 center;
+    std::vector<std::vector<MapSegmentPtr>> segments;
 
 public:   
     Map() {}
-    Map(std::string dataPath);
-    Map(std::string dataPath, int wBeg, int wEnd, int lBeg, int lEnd);
+    Map(const std::string& dataPath);
+    Map(const std::string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd);
     
     void render();
 };
