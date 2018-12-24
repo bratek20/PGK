@@ -7,7 +7,9 @@ out vec3 vsColor;
 void main(){
 	gl_Position =  vec4(vertexPos.x, vertexPos.z, 0, 1);
 	float ht = vertexPos.y;
-	if(ht < 0)   
+	if(ht < -32000)
+		vsColor = vec3(0, 0, 0);//black, no data
+	else if(ht < 0)   
 		vsColor = vec3(0, 0, 1); //blue
     else if (ht < 500)   
 		vsColor = vec3(0, ht/500, 0); //->green

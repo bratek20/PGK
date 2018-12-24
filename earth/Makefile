@@ -2,12 +2,12 @@ GCC = g++ -std=c++14 -Wall -Wextra -g
 GL = -lGLEW -lGL -lglfw 
 LIBS = -L../lib/ -L/home/anl/lib/
 INCLUDES = -I../include/ -I/home/anl/include/
-ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Light.o Player.o Scene.o DataReader.o MapSegment.o earth.o 
+ALL_OBJ = Globals.o Color.o Window.o Input.o Mesh.o Collider.o Actor.o Camera.o Light.o DataReader.o MapSegment.o Map.o earth.o 
 
 earth.out: $(ALL_OBJ)
 	$(GCC) -o earth.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
 
-earth.o: earth.cpp  Globals.h  Window.h Input.h Mesh.h Player.h Color.h Scene.h MapSegment.h
+earth.o: earth.cpp  Globals.h  Window.h Input.h MapSegment.h Map.h
 	$(GCC) -c  $(INCLUDES) earth.cpp
 
 Globals.o: Globals.cpp Globals.h
@@ -40,14 +40,11 @@ Camera.o: Camera.cpp Camera.h Actor.h
 Light.o: Light.cpp Light.h Actor.h Color.h
 	$(GCC) -c  $(INCLUDES) Light.cpp
 
-Player.o: Player.cpp Player.h Actor.h Light.h Globals.h Input.h
-	$(GCC) -c  $(INCLUDES) Player.cpp
-
-Scene.o: Scene.cpp Scene.h Camera.h Light.h Actor.h Color.h
-	$(GCC) -c  $(INCLUDES) Scene.cpp
-
 MapSegment.o: MapSegment.cpp MapSegment.h DataReader.h
 	$(GCC) -c  $(INCLUDES) MapSegment.cpp
+
+Map.o: Map.cpp Map.h
+	$(GCC) -c  $(INCLUDES) Map.cpp
 
 clean:
 	rm -f *.o *.out

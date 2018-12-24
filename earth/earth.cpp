@@ -1,89 +1,59 @@
 #include "Window.h"
 #include "Input.h"
 #include "Globals.h"
-#include "Mesh.h"
-#include "Scene.h"
-#include "Color.h"
-#include "Player.h"
+#include "Map.h"
 #include "MapSegment.h"
 
 #include <iostream>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
-ScenePtr scene;
-PlayerPtr player;
-glm::vec3 thirdPersonCamPos = {0, 2.5f, -4};
-int cameraSetting = 0;
-void changeCameraSetting(){
-	auto camera = scene->getCamera();
-	cameraSetting = (cameraSetting + 1)%2;
-	if(cameraSetting == 0){ // third person
-		player->addChild(camera);
-		camera->setPosition(thirdPersonCamPos);
-		camera->setRotation({10, 0, 0});
+Map map;
+bool initMap(int argc, char* argv[]){
+	string dataPath = argv[1];
+	if(argc == 2){
+		cout << "Reading all files in folder does not supported!" << endl;
+		return false;
 	}
-	else if(cameraSetting == 1){ // first person
-		player->addChild(camera);
-		camera->setPosition({0, 1, 1});
-		camera->setRotation({0, 0, 0});
+	else{
+		int wBeg = 0, wEnd = 0, lBeg = 0, lEnd = 0;
+		int idx = 2;
+		while(idx < argc){
+			string arg = string(argv[idx]); 
+			if(arg == "-sz"){
+				wBeg = atoi(argv[idx+1]);
+				wEnd = atoi(argv[idx+2]);
+			}
+			else if(arg == "-dl"){
+				lBeg = atoi(argv[idx+1]);
+				lEnd = atoi(argv[idx+2]);
+			}
+			idx += 3;
+		}
+		map = Map(dataPath, wBeg, wEnd, lBeg, lEnd); 
 	}
+	return true;
 }
 
-float zoomValue = 1;
-void zoomCamera(){
-	
-	if(cameraSetting == 0){ // third person
-		scene->getCamera()->setPosition(thirdPersonCamPos * zoomValue);
-	}
-}
-
-void zoomIn(){
-	zoomValue -= 0.25f;
-	zoomValue = max(1.0f, zoomValue);
-	zoomCamera();
-}
-
-void zoomOut(){
-	zoomValue += 0.25f;
-	zoomValue = min(2.0f, zoomValue);
-	zoomCamera();
-}
-
-void initGame(){
-	scene = Scene::create();
-	Globals::player = player = Player::create();
-	scene->addChild(player);
-	cameraSetting = 0;
-	changeCameraSetting();
-}
-
-int main(){
+int main(int argc, char* argv[]){
     if(!Window::open()){
         return -1;
     }
 	Input::init();
-    //Mesh::init();
 	Globals::init();
 	MapSegment::init();
+
+	if(!initMap(argc, argv)){
+		return 1;
+	}	
 	
-	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
-	Input::onKeyPressed(GLFW_KEY_O, zoomIn);
-	Input::onKeyPressed(GLFW_KEY_P, zoomOut);
-	
-	auto map = MapSegment::create("data/N50E016.hgt");
-	
-	//initGame();
 	while(!Window::shouldClose()){
 		Input::handle();
 
-		//scene->update();
-
         Window::clear();
-		map->render();
-		//Mesh::applyPlayerPosition(player->getWorldPosition());
-		//scene->render();
+		map.render();
 		Window::swapBuffers();
 		
 		Globals::updateTime();
