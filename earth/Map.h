@@ -8,6 +8,8 @@
 
 class Map {
     glm::vec2 center;
+    glm::vec2 translate;
+    float scale;
     std::vector<std::vector<MapSegmentPtr>> segments;
 
 public:   

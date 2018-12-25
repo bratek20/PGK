@@ -2,8 +2,9 @@
 #include <cstdio>
 
 GLFWwindow* Window::window;
+float Window::ratio;
 
-bool Window::open() {
+bool Window::open(const std::string& name) {
         // Initialise GLFW
 	if( !glfwInit() )
 	{
@@ -19,7 +20,9 @@ bool Window::open() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Memeory", NULL, NULL);
+	int width = 1024;
+	int height = 768;
+	window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
 	if( window == NULL ){
 		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
 		getchar();
@@ -27,6 +30,8 @@ bool Window::open() {
 		return false;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	setRatio(width, height);
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
@@ -38,13 +43,14 @@ bool Window::open() {
 		return false;
 	}	
 
-	glClearColor(0.0f, 0.0f, 0.7f, 0.0f);
-
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     return true;
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+	setRatio(width, height);
 }
 
 void Window::clear(){
@@ -65,4 +71,13 @@ void Window::close(){
 
 GLFWwindow* Window::getPtr(){
     return window;
+}
+
+void Window::setRatio(int width, int height){
+	ratio = static_cast<float>(height) / width;
+	printf("Ratio: %f\n", ratio);
+}
+
+float Window::getRatio(){
+	return ratio;
 }

@@ -8,7 +8,8 @@ Map::Map(const string& /*dataPath*/){
 
 }
 
-Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd){
+Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) :
+    translate(0, 0), scale(0.5f) {
     int wSize = wEnd - wBeg;
     int lSize = lEnd - lBeg;
     segments.resize(wSize, vector<MapSegmentPtr>(lSize));
@@ -45,7 +46,7 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd){
 void Map::render(){
     for(auto& raw : segments){
         for(auto& seg : raw){
-            seg->render(-center, {0.5f, 0.5f});
+            seg->render(-center * scale + translate, scale);
         }
     }
 }

@@ -40,7 +40,7 @@ Camera.o: Camera.cpp Camera.h Actor.h
 Light.o: Light.cpp Light.h Actor.h Color.h
 	$(GCC) -c  $(INCLUDES) Light.cpp
 
-MapSegment.o: MapSegment.cpp MapSegment.h DataReader.h
+MapSegment.o: MapSegment.cpp MapSegment.h DataReader.h Window.h
 	$(GCC) -c  $(INCLUDES) MapSegment.cpp
 
 Map.o: Map.cpp Map.h

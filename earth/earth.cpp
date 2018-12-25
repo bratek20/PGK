@@ -12,6 +12,11 @@ using namespace std;
 
 Map map;
 bool initMap(int argc, char* argv[]){
+	if(argc == 1){
+		cout << "No data path passed" << endl;
+		return false;
+	}
+
 	string dataPath = argv[1];
 	if(argc == 2){
 		cout << "Reading all files in folder does not supported!" << endl;
@@ -38,7 +43,7 @@ bool initMap(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-    if(!Window::open()){
+    if(!Window::open("earth")){
         return -1;
     }
 	Input::init();
