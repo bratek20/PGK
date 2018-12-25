@@ -16,7 +16,8 @@ GLuint MapSegment::ratioId;
 
 GLuint MapSegment::programId;
 GLuint MapSegment::vertexArrayIdx;
-GLuint MapSegment::indexBufferIdx;
+std::vector<GLuint> MapSegment::indexBufferIdx;
+std::vector<GLuint> MapSegment::indexBufferSizes;
 
 MapSegment::MapSegment(const vector<short>& heights, int w, int l) : offset(l, w){
     vector<float> data;
@@ -59,19 +60,32 @@ void MapSegment::init(){
     glGenVertexArrays(1, &vertexArrayIdx);
 	glBindVertexArray(vertexArrayIdx);
 
-    glGenBuffers(1, &indexBufferIdx);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferIdx);
+    addIndexBuffer(1);
+    addIndexBuffer(2);
+    addIndexBuffer(4);
+    addIndexBuffer(8);
+    addIndexBuffer(16);
+
+    //glEnable(GL_DEPTH_TEST);
+}
+
+void MapSegment::addIndexBuffer(int shift){
+    GLuint idx;
+    glGenBuffers(1, &idx);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx);
+
     vector<GLuint> data;
-    for(int i=0;i<1200;i++){
-        for(int j = 0; j < 1201;j++){
+    for(int i=0;i<1200;i+=shift){
+        for(int j = 0; j < 1201;j+=shift){
             data.push_back(i*1201 + j);
-            data.push_back((i+1)*1201 + j);
+            data.push_back((i+shift)*1201 + j);
         }
 	    data.push_back(PRIMITIVE_INDEX);
     }
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * data.size(), data.data(), GL_STATIC_DRAW);
 
-    //glEnable(GL_DEPTH_TEST);
+    indexBufferIdx.push_back(idx);
+    indexBufferSizes.push_back(data.size());
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * data.size(), data.data(), GL_STATIC_DRAW);
 }
 
 void MapSegment::clear(){
@@ -98,5 +112,6 @@ void MapSegment::render(glm::vec2 translate, float scale){
         (void*)0                      
     );
 
-    glDrawElements(GL_TRIANGLE_STRIP, 2403 * 1200, GL_UNSIGNED_INT, (void*)0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferIdx[0]);
+    glDrawElements(GL_TRIANGLE_STRIP, indexBufferSizes[0], GL_UNSIGNED_INT, (void*)0);
 }

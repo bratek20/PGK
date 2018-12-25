@@ -15,9 +15,8 @@ const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 
 
 Camera::Camera(glm::vec3 initPos) : position(initPos), zoom(0.5f) {
-    const static float ZOOM_STEP = 0.1f;
-    Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, ZOOM_STEP));
-    Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -ZOOM_STEP));
+    Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
+    Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
 }
 
 CameraPtr Camera::create(glm::vec3 initPos){
@@ -25,21 +24,21 @@ CameraPtr Camera::create(glm::vec3 initPos){
 }
 
 void Camera::update(){
-    static const float VELOCITY = 10;
-    float stepVal = VELOCITY * Globals::deltaTime;
+    static const float VELOCITY = 1;
+    float stepVal = VELOCITY * Globals::deltaTime / zoom;
     glm::vec3 step = glm::vec3(0);
 
     if(Input::isPressed(GLFW_KEY_W) || Input::isPressed(GLFW_KEY_UP)){
-        step = {0, 0, -stepVal};
-    }
-    if(Input::isPressed(GLFW_KEY_S) || Input::isPressed(GLFW_KEY_DOWN)){
         step = {0, 0, stepVal};
     }
+    if(Input::isPressed(GLFW_KEY_S) || Input::isPressed(GLFW_KEY_DOWN)){
+        step = {0, 0, -stepVal};
+    }
     if(Input::isPressed(GLFW_KEY_A) || Input::isPressed(GLFW_KEY_LEFT)){
-        step = {stepVal, 0, 0};
+        step = {-stepVal, 0, 0};
     }
     if(Input::isPressed(GLFW_KEY_D) || Input::isPressed(GLFW_KEY_RIGHT)){
-        step = {-stepVal, 0, 0};
+        step = {stepVal, 0, 0};
     }
     position += step;
 }
@@ -48,13 +47,22 @@ glm::vec2 Camera::getPos2D() const {
     return glm::vec2(position.x, position.z);
 }
 
-void Camera::changeZoom(float step){
+void Camera::changeZoom(int dir){
     static const float MIN_ZOOM = 0.1f;
-    static const float MAX_ZOOM = 3.0f;
+    static const float MAX_ZOOM = 10.0f;
+    
+    float step = MIN_ZOOM;
+    if(zoom > 1){
+        step = 0.5f;
+    }
+    else if(zoom >= 5){
+        step = 1.0f;
+    }
 
-    zoom += step;
+    zoom += dir * step;
     zoom = max(zoom, MIN_ZOOM);
     zoom = min(zoom, MAX_ZOOM);
+    cout << "Zoom: " << zoom << endl;
 }
 
 float Camera::getZoom() const {

@@ -21,7 +21,8 @@ class MapSegment {
 
     static GLuint programId;
     static GLuint vertexArrayIdx;
-    static GLuint indexBufferIdx;
+    static std::vector<GLuint> indexBufferIdx;
+    static std::vector<GLuint> indexBufferSizes;
 
     glm::vec2 offset;
     GLuint vertexBufferIdx;
@@ -36,6 +37,7 @@ public:
 
 private:
     MapSegment(const std::vector<short>& heights, int w, int l);
+    static void addIndexBuffer(int shift);
 };
 
 #endif

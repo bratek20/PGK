@@ -17,7 +17,7 @@ public:
     static CameraPtr create(glm::vec3 initPos);
 
     void update();
-    
+
     glm::vec2 getPos2D() const;
     float getZoom() const;
 
@@ -26,7 +26,7 @@ public:
 
 private:
     Camera(glm::vec3 initPos);
-    void changeZoom(float step);
+    void changeZoom(int dir);
 
 };
 
