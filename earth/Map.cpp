@@ -8,8 +8,7 @@ Map::Map(const string& /*dataPath*/){
 
 }
 
-Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) :
-    translate(0, 0), scale(0.5f) {
+Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
     int wSize = wEnd - wBeg;
     int lSize = lEnd - lBeg;
     segments.resize(wSize, vector<MapSegmentPtr>(lSize));
@@ -40,13 +39,15 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) :
             segments[w-wBeg][l-lBeg] = seg;
         }
     }
-    center = {(lBeg + lEnd)/2, (wBeg + wEnd)/2};
+
+    cam = Camera::create({(lBeg + lEnd)/2, 0, (wBeg + wEnd)/2});
 }
     
 void Map::render(){
+    cam->update();
     for(auto& raw : segments){
         for(auto& seg : raw){
-            seg->render(-center * scale + translate, scale);
+            seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom());
         }
     }
 }

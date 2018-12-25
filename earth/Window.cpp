@@ -47,7 +47,7 @@ bool Window::open(const std::string& name) {
     return true;
 }
 
-void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void Window::framebufferSizeCallback(GLFWwindow* , int width, int height)
 {
 	glViewport(0, 0, width, height);
 	setRatio(width, height);

@@ -2,14 +2,13 @@
 #define MAP_H
 
 #include "MapSegment.h"
+#include "Camera.h"
 
 #include <vector>
 #include <string>
 
 class Map {
-    glm::vec2 center;
-    glm::vec2 translate;
-    float scale;
+    CameraPtr cam;
     std::vector<std::vector<MapSegmentPtr>> segments;
 
 public:   
