@@ -4,6 +4,7 @@ uniform vec2 Offset;
 uniform vec2 Translate;
 uniform float Scale;
 uniform float Ratio;
+uniform int Marked;
 
 layout(location = 0) in float height;
 
@@ -28,4 +29,7 @@ void main(){
 			vsColor = vec3(1, 2-ht/1000, 0); //->red
 	else                 
 		vsColor = vec3(1, ht/2000-1, ht/2000-1);  //->white
+
+	if(Marked == 1)
+		vsColor = vec3(1,0,0);
 }

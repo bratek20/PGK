@@ -18,6 +18,7 @@ class MapSegment {
     static GLuint translateId;
     static GLuint scaleId;
     static GLuint ratioId;
+    static GLuint markedId;
 
     static GLuint programId;
     static GLuint vertexArrayIdx;
@@ -26,6 +27,7 @@ class MapSegment {
 
     glm::vec2 offset;
     GLuint vertexBufferIdx;
+
 public:    
     static MapSegmentPtr create(const std::string& fileName, int w, int l);
     ~MapSegment();
@@ -33,11 +35,13 @@ public:
     static void init(); 
     static void clear();
 
-    void render(glm::vec2 translate, float scale);
+    void render(glm::vec2 translate, float scale, int LOD, bool marked);
+    static unsigned getIndexSize(int LOD);
 
 private:
     MapSegment(const std::vector<short>& heights, int w, int l);
     static void addIndexBuffer(int shift);
+    static int lodToIdx(int lod);
 };
 
 #endif

@@ -9,10 +9,6 @@ Map::Map(const string& /*dataPath*/){
 }
 
 Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
-    int wSize = wEnd - wBeg;
-    int lSize = lEnd - lBeg;
-    segments.resize(wSize, vector<MapSegmentPtr>(lSize));
-
     for(int w = wBeg; w < wEnd; w++){
         for(int l = lBeg; l < lEnd; l++){
             string wPref = w >= 0 ? "N" : "S";
@@ -36,7 +32,7 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
             if(seg == nullptr){
                 cout << "Segment loading failed for path: " << fullPath << endl;
             }
-            segments[w-wBeg][l-lBeg] = seg;
+            segments[getKey({l, w})] = seg;
         }
     }
 
@@ -45,9 +41,45 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
     
 void Map::render(){
     cam->update();
-    for(auto& raw : segments){
-        for(auto& seg : raw){
-            seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom());
-        }
+    auto center = cam->getCenterSegment();
+    auto size = cam->getViewSize();
+    int LOD = getLOD();
+    int segs = 0;
+    unsigned verts = 0;
+    for(int x = -size.first/2; x <= size.first/2; x++){
+        for(int y = -size.second/2; y <= size.second/2; y++){
+            auto seg = segments[getKey({x + center.first, y + center.second})];
+            if(seg != nullptr){
+                seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, x==0 && y==0);
+                segs++;
+                verts += MapSegment::getIndexSize(LOD);
+            }
+        }  
     }
+
+    cout << "Segments rendered: " << segs << endl;
+    cout << "LOD: " << LOD << endl;
+    cout << "Verts: " << verts << endl;
+}
+
+std::string Map::getKey(std::pair<int,int> coords) const {
+    return to_string(coords.first) + "," + to_string(coords.second);
+}
+
+int Map::getLOD(){
+    float zoom = cam->getZoom();
+    int lod = 1;
+    if(zoom > 1){
+        lod = 2;
+    }
+    if(zoom > 3){
+        lod = 3;
+    }
+    if(zoom > 5){
+        lod = 4;
+    }
+    if(zoom > 7){
+        lod = 5;
+    }
+    return lod;
 }

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Input.h"
 #include "Globals.h"
+#include "Window.h"
 
 //#define GLM_ENABLE_EXPERIMENTAL
 //#include <glm/gtx/transform.hpp>
@@ -8,13 +9,14 @@
 #include <iostream>
 #include <functional>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
 const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 
 
-Camera::Camera(glm::vec3 initPos) : position(initPos), zoom(0.5f) {
+Camera::Camera(glm::vec3 initPos) : position(initPos), zoom(1.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
     Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
 }
@@ -67,6 +69,17 @@ void Camera::changeZoom(int dir){
 
 float Camera::getZoom() const {
     return zoom;
+}
+
+std::pair<int,int> Camera::getCenterSegment(){
+    auto pos = getPos2D();
+    return {floor(pos.x), floor(pos.y)};
+}
+
+std::pair<int,int> Camera::getViewSize(){
+    float width = 2.0f / (zoom * Window::getRatio());
+    float height = 2.0f / zoom;
+    return {ceil(width) + 1, ceil(height) + 1};
 }
 
 glm::mat4 Camera::getViewMat(){

@@ -22,7 +22,7 @@ Window.o: Window.cpp Window.h
 Input.o: Input.cpp Input.h Window.h
 	$(GCC) -c  $(INCLUDES) Input.cpp
 
-Camera.o: Camera.cpp Camera.h Input.h
+Camera.o: Camera.cpp Camera.h Input.h Window.h
 	$(GCC) -c  $(INCLUDES) Camera.cpp
 
 MapSegment.o: MapSegment.cpp MapSegment.h DataReader.h Window.h

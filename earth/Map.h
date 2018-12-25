@@ -4,12 +4,12 @@
 #include "MapSegment.h"
 #include "Camera.h"
 
-#include <vector>
+#include <unordered_map>
 #include <string>
 
 class Map {
     CameraPtr cam;
-    std::vector<std::vector<MapSegmentPtr>> segments;
+    std::unordered_map<std::string, MapSegmentPtr> segments;
 
 public:   
     Map() {}
@@ -17,6 +17,10 @@ public:
     Map(const std::string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd);
     
     void render();
+
+private:
+    std::string getKey(std::pair<int,int> coords) const;
+    int getLOD();
 };
 
 #endif

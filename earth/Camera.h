@@ -20,6 +20,8 @@ public:
 
     glm::vec2 getPos2D() const;
     float getZoom() const;
+    std::pair<int,int> getCenterSegment();
+    std::pair<int,int> getViewSize();
 
     glm::mat4 getViewMat();
     glm::mat4 getProjectionMat(); 
