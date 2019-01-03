@@ -1,6 +1,9 @@
 #ifndef MAP_SEGMENT_H
 #define MAP_SEGMENT_H
 
+#include "Program2D.h"
+#include "Program3D.h"
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -20,7 +23,8 @@ class MapSegment {
     static GLuint ratioId;
     static GLuint markedId;
 
-    static GLuint programId;
+    static Program2D prog2D;
+    static Program3D prog3D;
     static GLuint vertexArrayIdx;
     static std::vector<GLuint> indexBufferIdx;
     static std::vector<GLuint> indexBufferSizes;

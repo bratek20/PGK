@@ -50,7 +50,7 @@ void Map::render(){
         for(int y = -size.second/2; y <= size.second/2; y++){
             auto seg = segments[getKey({x + center.first, y + center.second})];
             if(seg != nullptr){
-                seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, x==0 && y==0);
+                seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, false);//x==0 && y==0);
                 segs++;
                 verts += MapSegment::getIndexSize(LOD);
             }

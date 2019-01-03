@@ -1,7 +1,7 @@
 #include "MapSegment.h"
 #include "DataReader.h"
 #include "Window.h"
-#include <common/shader.hpp>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include <iostream>
@@ -9,13 +9,9 @@
 using namespace std;
 
 const GLuint MapSegment::PRIMITIVE_INDEX=666666666;
-GLuint MapSegment::offsetId;
-GLuint MapSegment::translateId;
-GLuint MapSegment::scaleId;
-GLuint MapSegment::ratioId;
-GLuint MapSegment::markedId;
 
-GLuint MapSegment::programId;
+Program2D MapSegment::prog2D;
+Program3D MapSegment::prog3D;
 GLuint MapSegment::vertexArrayIdx;
 std::vector<GLuint> MapSegment::indexBufferIdx;
 std::vector<GLuint> MapSegment::indexBufferSizes;
@@ -47,17 +43,11 @@ MapSegmentPtr MapSegment::create(const string& fileName, int w, int l){
 }
 
 void MapSegment::init(){
-    programId =  LoadShaders( "earth2D.vs", "earth2D.fs" ); 
-    glUseProgram(programId);
+    prog2D = Program2D("earth2D.vs", "earth.fs");
+    prog3D = Program3D("earth3D.vs", "earth.fs");
 
     glEnable(GL_PRIMITIVE_RESTART);
     glPrimitiveRestartIndex(PRIMITIVE_INDEX);
-
-    offsetId = glGetUniformLocation(programId, "Offset");
-    translateId = glGetUniformLocation(programId, "Translate");
-    scaleId = glGetUniformLocation(programId, "Scale");
-    ratioId = glGetUniformLocation(programId, "Ratio");
-    markedId = glGetUniformLocation(programId, "Marked");
 
     glGenVertexArrays(1, &vertexArrayIdx);
 	glBindVertexArray(vertexArrayIdx);
@@ -91,18 +81,18 @@ void MapSegment::addIndexBuffer(int shift){
 }
 
 void MapSegment::clear(){
+    prog2D.clear();
     glDisableVertexAttribArray(0);
-	
-	glDeleteProgram(programId);
 	glDeleteVertexArrays(1, &vertexArrayIdx);
 }
 
 void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
-    glUniform2f(offsetId, offset.x, offset.y);
-    glUniform2f(translateId, translate.x, translate.y);
-    glUniform1f(scaleId, scale);
-    glUniform1f(ratioId, Window::getRatio());
-    glUniform1i(markedId, marked ? 1 : 0);
+    prog2D.use();
+    prog2D.setOffset(offset);
+    prog2D.setTranslate(translate);
+    prog2D.setScale(scale);
+    prog2D.setMarked(marked);
+    prog2D.setRatio(Window::getRatio());
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
     glEnableVertexAttribArray(0);
@@ -117,7 +107,7 @@ void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
 
     int idx = lodToIdx(LOD); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferIdx[idx]);
-    glDrawElements(GL_TRIANGLE_STRIP, indexBufferSizes[idx], GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_LINE_STRIP, indexBufferSizes[idx], GL_UNSIGNED_INT, (void*)0);
 }
 
 unsigned MapSegment::getIndexSize(int LOD){

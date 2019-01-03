@@ -15,7 +15,6 @@ using namespace std;
 
 const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 
-
 Camera::Camera(glm::vec3 initPos) : position(initPos), zoom(1.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
     Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
@@ -51,14 +50,17 @@ glm::vec2 Camera::getPos2D() const {
 
 void Camera::changeZoom(int dir){
     static const float MIN_ZOOM = 0.1f;
-    static const float MAX_ZOOM = 10.0f;
+    static const float MAX_ZOOM = 100.0f;
     
     float step = MIN_ZOOM;
     if(zoom > 1){
         step = 0.5f;
     }
-    else if(zoom >= 5){
+    else if(zoom >= 5 && zoom < 10){
         step = 1.0f;
+    }
+    else if(zoom >= 20){
+        step = 5.0f;
     }
 
     zoom += dir * step;
@@ -85,7 +87,7 @@ std::pair<int,int> Camera::getViewSize(){
 glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 position, // the position of your camera, in world space
-                position,   // where you want to look at, in world space
+                position - LOCAL_UP,   // where you want to look at, in world space
                 LOCAL_UP       // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
             );
 }
