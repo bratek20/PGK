@@ -36,10 +36,10 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
         }
     }
 
-    cam = Camera::create({(lBeg + lEnd)/2, 0, (wBeg + wEnd)/2});
+    cam = Camera::create(glm::vec2((lBeg + lEnd)/2, (wBeg + wEnd)/2));
 }
     
-void Map::render(){
+void Map::render(bool as2D){
     cam->update();
     auto center = cam->getCenterSegment();
     auto size = cam->getViewSize();
@@ -50,16 +50,24 @@ void Map::render(){
         for(int y = -size.second/2; y <= size.second/2; y++){
             auto seg = segments[getKey({x + center.first, y + center.second})];
             if(seg != nullptr){
-                seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, false);//x==0 && y==0);
+                if(as2D)
+                {
+                    seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, false);//x==0 && y==0);
+                }
+                else
+                {
+                    seg->render(cam->getVPMat(), Camera::RADIUS, LOD);
+                }
+                
                 segs++;
                 verts += MapSegment::getIndexSize(LOD);
             }
         }  
     }
 
-    cout << "Segments rendered: " << segs << endl;
-    cout << "LOD: " << LOD << endl;
-    cout << "Verts: " << verts << endl;
+    //cout << "Segments rendered: " << segs << endl;
+    //cout << "LOD: " << LOD << endl;
+    //cout << "Verts: " << verts << endl;
 }
 
 std::string Map::getKey(std::pair<int,int> coords) const {

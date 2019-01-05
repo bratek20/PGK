@@ -42,6 +42,11 @@ bool initMap(int argc, char* argv[]){
 	return true;
 }
 
+bool render2D = true;
+void changeRenderType(){
+	render2D = !render2D;
+}
+
 int main(int argc, char* argv[]){
     if(!Window::open("earth")){
         return -1;
@@ -53,12 +58,13 @@ int main(int argc, char* argv[]){
 	if(!initMap(argc, argv)){
 		return 1;
 	}	
-	
+	Input::onKeyPressed(GLFW_KEY_M, changeRenderType);
+
 	while(!Window::shouldClose()){
 		Input::handle();
 
         Window::clear();
-		map.render();
+		map.render(render2D);
 		Window::swapBuffers();
 		
 		Globals::updateTime();

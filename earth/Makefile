@@ -2,7 +2,7 @@ GCC = g++ -std=c++14 -Wall -Wextra -g
 GL = -lGLEW -lGL -lglfw 
 LIBS = -L../lib/ -L/home/anl/lib/
 INCLUDES = -I../include/ -I/home/anl/include/
-ALL_OBJ = Globals.o Window.o Input.o Camera.o DataReader.o MapSegment.o Map.o ShaderProgram.o Program2D.o Program3D.o earth.o 
+ALL_OBJ = Globals.o Window.o Input.o Camera.o DataReader.o MapSegment.o Map.o ShaderProgram.o CommonProgram.o  Program2D.o Program3D.o earth.o 
 
 earth.out: $(ALL_OBJ)
 	$(GCC) -o earth.out $(ALL_OBJ) $(GL) $(LIBS) -lcommon
@@ -37,10 +37,13 @@ Map.o: Map.cpp Map.h
 ShaderProgram.o: ShaderProgram.cpp ShaderProgram.h
 	$(GCC) -c  $(INCLUDES) ShaderProgram.cpp
 
-Program2D.o: Program2D.cpp Program2D.h ShaderProgram.h
+CommonProgram.o: CommonProgram.cpp CommonProgram.h
+	$(GCC) -c  $(INCLUDES) CommonProgram.cpp
+
+Program2D.o: Program2D.cpp Program2D.h CommonProgram.h
 	$(GCC) -c  $(INCLUDES) Program2D.cpp
 
-Program3D.o: Program3D.cpp Program3D.h ShaderProgram.h
+Program3D.o: Program3D.cpp Program3D.h CommonProgram.h
 	$(GCC) -c  $(INCLUDES) Program3D.cpp
 
 clean:

@@ -88,11 +88,24 @@ void MapSegment::clear(){
 
 void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
     prog2D.use();
-    prog2D.setOffset(offset);
     prog2D.setTranslate(translate);
     prog2D.setScale(scale);
-    prog2D.setMarked(marked);
-    prog2D.setRatio(Window::getRatio());
+
+    commonRender(prog2D, LOD, marked);
+}
+
+void MapSegment::render(glm::mat4 VPMat, float radius, int LOD){
+    prog3D.use();
+    prog3D.setVPMat(VPMat);
+    prog3D.setRadius(radius);
+
+    commonRender(prog3D, LOD, false);
+}
+
+void MapSegment::commonRender(CommonProgram& prog, int LOD, bool marked){
+    prog.setOffset(offset);
+    prog.setMarked(marked);
+    prog.setRatio(Window::getRatio());
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
     glEnableVertexAttribArray(0);
@@ -107,7 +120,7 @@ void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
 
     int idx = lodToIdx(LOD); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferIdx[idx]);
-    glDrawElements(GL_LINE_STRIP, indexBufferSizes[idx], GL_UNSIGNED_INT, (void*)0);
+    glDrawElements(GL_TRIANGLE_STRIP, indexBufferSizes[idx], GL_UNSIGNED_INT, (void*)0);
 }
 
 unsigned MapSegment::getIndexSize(int LOD){

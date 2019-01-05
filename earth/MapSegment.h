@@ -39,13 +39,17 @@ public:
     static void init(); 
     static void clear();
 
-    void render(glm::vec2 translate, float scale, int LOD, bool marked);
     static unsigned getIndexSize(int LOD);
+
+    void render(glm::vec2 translate, float scale, int LOD, bool marked);
+    void render(glm::mat4 VPMat, float radius, int LOD);
 
 private:
     MapSegment(const std::vector<short>& heights, int w, int l);
     static void addIndexBuffer(int shift);
     static int lodToIdx(int lod);
+
+    void commonRender(CommonProgram& prog, int LOD, bool marked);
 };
 
 #endif
