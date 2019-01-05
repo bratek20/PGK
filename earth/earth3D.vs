@@ -10,10 +10,10 @@ layout(location = 0) in float height;
 out vec3 vsColor;
 
 void main(){
-	float lon = Offset.x + (gl_VertexID % 1201) / 1201.0f;
-    float lat = Offset.y + (1201 - gl_VertexID / 1201) / 1201.0f;
+	float lon = Offset.x + (gl_VertexID % 1201) / 1200.0f;
+    float lat = Offset.y + (1201 - gl_VertexID / 1201) / 1200.0f;
 	
-	float r = Radius + log(height);
+	float r = Radius + height * 2;
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);

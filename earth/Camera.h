@@ -14,15 +14,16 @@ class Camera {
     float zoom;
     float height;
     glm::vec3 direction;
-    float horAngle;
-    float vertAngle;
+    float yaw;
+    float pitch;
+    glm::vec3 shift3D;
 
 public:
     static const float RADIUS;
 
     static CameraPtr create(glm::vec2 initPos);
 
-    void update();
+    void update(bool is2D);
 
     glm::vec2 getPos2D() const;
     glm::vec3 getPos3D() const;
@@ -35,6 +36,9 @@ public:
 private:
     Camera(glm::vec2 initPos);
 
+    void update2D();
+    void update3D();
+    
     void changeZoom(int dir);
     void changeHeight(int dir);
 

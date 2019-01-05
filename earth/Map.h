@@ -16,7 +16,7 @@ public:
     Map(const std::string& dataPath);
     Map(const std::string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd);
     
-    void render(bool as2D);
+    void render(bool is2D);
 
 private:
     std::string getKey(std::pair<int,int> coords) const;

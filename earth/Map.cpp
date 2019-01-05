@@ -39,8 +39,8 @@ Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) {
     cam = Camera::create(glm::vec2((lBeg + lEnd)/2, (wBeg + wEnd)/2));
 }
     
-void Map::render(bool as2D){
-    cam->update();
+void Map::render(bool is2D){
+    cam->update(is2D);
     auto center = cam->getCenterSegment();
     auto size = cam->getViewSize();
     int LOD = getLOD();
@@ -50,12 +50,10 @@ void Map::render(bool as2D){
         for(int y = -size.second/2; y <= size.second/2; y++){
             auto seg = segments[getKey({x + center.first, y + center.second})];
             if(seg != nullptr){
-                if(as2D)
-                {
+                if(is2D){
                     seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, false);//x==0 && y==0);
                 }
-                else
-                {
+                else{
                     seg->render(cam->getVPMat(), Camera::RADIUS, LOD);
                 }
                 
@@ -65,9 +63,9 @@ void Map::render(bool as2D){
         }  
     }
 
-    //cout << "Segments rendered: " << segs << endl;
-    //cout << "LOD: " << LOD << endl;
-    //cout << "Verts: " << verts << endl;
+    cout << "Segments rendered: " << segs << endl;
+    cout << "LOD: " << LOD << endl;
+    cout << "Verts: " << verts << endl;
 }
 
 std::string Map::getKey(std::pair<int,int> coords) const {

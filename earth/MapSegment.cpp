@@ -58,7 +58,7 @@ void MapSegment::init(){
     addIndexBuffer(8);
     addIndexBuffer(16);
 
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void MapSegment::addIndexBuffer(int shift){

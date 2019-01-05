@@ -42,9 +42,9 @@ bool initMap(int argc, char* argv[]){
 	return true;
 }
 
-bool render2D = true;
+bool is2D = true;
 void changeRenderType(){
-	render2D = !render2D;
+	is2D = !is2D;
 }
 
 int main(int argc, char* argv[]){
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
 		Input::handle();
 
         Window::clear();
-		map.render(render2D);
+		map.render(is2D);
 		Window::swapBuffers();
 		
 		Globals::updateTime();

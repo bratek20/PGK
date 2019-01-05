@@ -11,8 +11,8 @@ layout(location = 0) in float height;
 out vec3 vsColor;
 
 void main(){
-	float x = (gl_VertexID % 1201) / 1201.0f;
-    float z = (1201 - gl_VertexID / 1201) / 1201.0f;
+	float x = (gl_VertexID % 1201) / 1200.0f;
+    float z = (1201 - gl_VertexID / 1201) / 1200.0f;
 	vec2 pos2d = (vec2(x, z) + Offset) * Scale + Translate;
 	gl_Position =  vec4(pos2d.x * Ratio, pos2d.y, 0, 1);
 
