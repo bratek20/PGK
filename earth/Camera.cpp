@@ -3,8 +3,8 @@
 #include "Globals.h"
 #include "Window.h"
 
-//#define GLM_ENABLE_EXPERIMENTAL
-//#include <glm/gtx/transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <functional>
@@ -14,9 +14,10 @@
 using namespace std;
 
 const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
+const glm::vec2 Camera::LOCAL_UP_2D = glm::vec2(0,1);
 const float Camera::RADIUS = 100000;//6 371 000;
 
-Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(2500.0f), yaw(-90.0f), pitch(0.0f) {
+Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(2500.0f), horAngle(0.0f), vertAngle(0.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
     Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
     Input::onKeyPressed(GLFW_KEY_K, std::bind(&Camera::changeHeight, this, 1));
@@ -57,37 +58,34 @@ void Camera::update2D(){
 }
 
 void Camera::update3D(){
-    static const float VELOCITY = 1000;
+    static const float VELOCITY = 1;
     float stepVal = VELOCITY * Globals::deltaTime;
     
     static const float MOUSE_SPEED = 1;
     float mouseStep = MOUSE_SPEED * Globals::deltaTime;
 
-    static const float MIN_PITCH = -89;
-    static const float MAX_PITCH = 89;
+    static const float MIN_VERT_ANGLE = -89;
+    static const float MAX_VERT_ANGLE = 89;
 
-    yaw += mouseStep * Input::getMouseOffset().x;;
-    pitch += mouseStep * Input::getMouseOffset().y;
+    horAngle += mouseStep * Input::getMouseOffset().x;
+    vertAngle += mouseStep * Input::getMouseOffset().y;
 
-    pitch = min(pitch, MAX_PITCH);
-    pitch = max(pitch, MIN_PITCH);
+    cout << "angle: " << horAngle << endl;
+    cout << "x: " << getDir2D().x << ", y: " << getDir2D().y << endl; 
+    vertAngle = min(vertAngle, MAX_VERT_ANGLE);
+    vertAngle = max(vertAngle, MIN_VERT_ANGLE);
 
-    cout << "y: " << yaw << endl;
-    cout << "p: " << pitch << endl;
-    direction = glm::vec3(
-        cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-        sin(glm::radians(pitch)),
-        sin(glm::radians(yaw)) * cos(glm::radians(pitch))
-    );
-
-    glm::vec3 right = glm::normalize(glm::cross(direction, LOCAL_UP));
-    float dirMult = 0;
+    glm::vec2 dir2D = getDir2D();
+    glm::vec3 forward = glm::normalize(glm::vec3(dir2D.x, 0, dir2D.y));
+    glm::vec3 right = glm::normalize(glm::cross(forward, LOCAL_UP));
+    
+    float forMult = 0;
     float rightMult = 0;
     if(Input::isPressed(GLFW_KEY_W) || Input::isPressed(GLFW_KEY_UP)){
-        dirMult = 1;
+        forMult = 1;
     }
     if(Input::isPressed(GLFW_KEY_S) || Input::isPressed(GLFW_KEY_DOWN)){
-        dirMult = -1;
+        forMult = -1;
     }
     if(Input::isPressed(GLFW_KEY_A) || Input::isPressed(GLFW_KEY_LEFT)){
         rightMult = -1;
@@ -96,7 +94,8 @@ void Camera::update3D(){
         rightMult = 1;
     }
 
-    shift3D += (direction * dirMult + right * rightMult) * stepVal;
+    glm::vec3 step = (forward * forMult + right * rightMult) * stepVal;
+    pos2D += glm::vec2(step.x, step.z);
 }
 
 glm::vec2 Camera::getPos2D() const {
@@ -104,15 +103,27 @@ glm::vec2 Camera::getPos2D() const {
 }
 
 glm::vec3 Camera::getPos3D() const {
-    float lon = pos2D.x;
-    float lat = pos2D.y;
+    return convert(pos2D, height);
+}
+
+glm::vec3 Camera::convert(glm::vec2 degPos, float h) const {
+    float lon = degPos.x;
+    float lat = degPos.y;
 	
-	float r = RADIUS + height;
+	float r = RADIUS + h;
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);
     
-    return glm::vec3(x,y,z) + shift3D;
+    return glm::vec3(x,y,z);
+}
+
+glm::vec2 Camera::getDir2D() const {
+    return glm::normalize(glm::rotate(LOCAL_UP_2D, glm::radians(-horAngle)));
+}
+
+glm::vec3 Camera::getCenter() const {
+    return convert(pos2D + getDir2D(), height + 1000*vertAngle);
 }
 
 void Camera::changeZoom(int dir){
@@ -169,8 +180,8 @@ glm::mat4 Camera::getVPMat(){
 glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 getPos3D(), // the position of your camera, in world space
-                getPos3D() + direction,   // where you want to look at, in world space
-                LOCAL_UP    // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
+                getCenter(),   // where you want to look at, in world space
+                glm::normalize(getPos3D())    // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
             );
 }
 

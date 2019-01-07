@@ -63,9 +63,9 @@ void Map::render(bool is2D){
         }  
     }
 
-    cout << "Segments rendered: " << segs << endl;
-    cout << "LOD: " << LOD << endl;
-    cout << "Verts: " << verts << endl;
+    //cout << "Segments rendered: " << segs << endl;
+    //cout << "LOD: " << LOD << endl;
+    //cout << "Verts: " << verts << endl;
 }
 
 std::string Map::getKey(std::pair<int,int> coords) const {
