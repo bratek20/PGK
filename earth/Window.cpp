@@ -43,7 +43,7 @@ bool Window::open(const std::string& name) {
 		return false;
 	}	
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.52f, 0.80f, 0.92f, 0.0f);
     return true;
 }
 

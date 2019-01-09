@@ -4,6 +4,7 @@ uniform vec2 Offset;
 uniform float Ratio;
 uniform mat4 VP;
 uniform float Radius;
+uniform int Empty;
 
 layout(location = 0) in float height;
 
@@ -12,8 +13,10 @@ out vec3 vsColor;
 void main(){
 	float lon = Offset.x + (gl_VertexID % 1201) / 1200.0f;
     float lat = Offset.y + (1201 - gl_VertexID / 1201) / 1200.0f;
+	lon = radians(lon);
+	lat = radians(lat);
 	
-	float r = Radius + height * 2;
+	float r = Radius + height / 100;
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);
@@ -22,8 +25,8 @@ void main(){
 	gl_Position =  VP * vec4(pos3d, 1);
 
 	float ht = height;
-	if(ht < -32000)
-		vsColor = vec3(0, 0, 0);//black, no data
+	if(Empty == 1)
+		vsColor = vec3(0.5f, 0.5f, 0.5f);
 	else if(ht < 0)   
 		vsColor = vec3(0, 0, 1); //blue
 	else if (ht < 500)   

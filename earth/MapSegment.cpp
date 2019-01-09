@@ -9,6 +9,7 @@
 using namespace std;
 
 const GLuint MapSegment::PRIMITIVE_INDEX=666666666;
+GLuint MapSegment::EMPTY_VERTEX_IDX=0;
 
 Program2D MapSegment::prog2D;
 Program3D MapSegment::prog3D;
@@ -17,28 +18,33 @@ std::vector<GLuint> MapSegment::indexBufferIdx;
 std::vector<GLuint> MapSegment::indexBufferSizes;
 
 MapSegment::MapSegment(const vector<short>& heights, int w, int l) : offset(l, w){
-    vector<float> data;
-    data.reserve(heights.size());
-    for(unsigned i=0;i<heights.size();i++){
-        float y = heights[i];
-        data.push_back(y);
+    if(heights.size() != 1201 * 1201){
+        empty = true;
+        vertexBufferIdx = EMPTY_VERTEX_IDX;
     }
+    else{
+        empty = false;
+        vector<float> data;
+        data.reserve(heights.size());
+        for(unsigned i=0;i<heights.size();i++){
+            float y = heights[i];
+            data.push_back(y);
+        }
 
-    glGenBuffers(1, &vertexBufferIdx);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), data.data(), GL_STATIC_DRAW);
+        glGenBuffers(1, &vertexBufferIdx);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), data.data(), GL_STATIC_DRAW);
+    }
 }
 
 MapSegment::~MapSegment(){
-    glDeleteBuffers(1, &vertexBufferIdx);
+    if(!empty){
+        glDeleteBuffers(1, &vertexBufferIdx);
+    }
 }
 
 MapSegmentPtr MapSegment::create(const string& fileName, int w, int l){
     auto heights = DataReader::read(fileName);
-    if(heights.size() != 1201 * 1201){
-        cout << "Heights size for " << fileName << " is " << heights.size() << endl;
-        return nullptr;
-    }
     return MapSegmentPtr(new MapSegment(heights, w, l));
 }
 
@@ -57,6 +63,11 @@ void MapSegment::init(){
     addIndexBuffer(4);
     addIndexBuffer(8);
     addIndexBuffer(16);
+
+    vector<float> data(1201*1201, 0);
+    glGenBuffers(1, &EMPTY_VERTEX_IDX);
+    glBindBuffer(GL_ARRAY_BUFFER, EMPTY_VERTEX_IDX);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), data.data(), GL_STATIC_DRAW);
 
     glEnable(GL_DEPTH_TEST);
 }
@@ -83,10 +94,15 @@ void MapSegment::addIndexBuffer(int shift){
 void MapSegment::clear(){
     prog2D.clear();
     glDisableVertexAttribArray(0);
+    glDeleteBuffers(1, &EMPTY_VERTEX_IDX);
 	glDeleteVertexArrays(1, &vertexArrayIdx);
 }
 
 void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
+    if(empty){
+        return;
+    }
+
     prog2D.use();
     prog2D.setTranslate(translate);
     prog2D.setScale(scale);
@@ -98,6 +114,7 @@ void MapSegment::render(glm::mat4 VPMat, float radius, int LOD){
     prog3D.use();
     prog3D.setVPMat(VPMat);
     prog3D.setRadius(radius);
+    prog3D.setEmpty(empty);
 
     commonRender(prog3D, LOD, false);
 }

@@ -17,6 +17,7 @@ using MapSegmentPtr = std::shared_ptr<MapSegment>;
 
 class MapSegment {
     static const GLuint PRIMITIVE_INDEX;
+    static GLuint EMPTY_VERTEX_IDX;
     static GLuint offsetId;
     static GLuint translateId;
     static GLuint scaleId;
@@ -31,6 +32,7 @@ class MapSegment {
 
     glm::vec2 offset;
     GLuint vertexBufferIdx;
+    bool empty;
 
 public:    
     static MapSegmentPtr create(const std::string& fileName, int w, int l);

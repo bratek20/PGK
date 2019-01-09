@@ -15,9 +15,9 @@ using namespace std;
 
 const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 const glm::vec2 Camera::LOCAL_UP_2D = glm::vec2(0,1);
-const float Camera::RADIUS = 100000;//6 371 000;
+const float Camera::RADIUS = 6371;//6 371 000;
 
-Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(2500.0f), horAngle(0.0f), vertAngle(0.0f) {
+Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(1000.0f), horAngle(0.0f), vertAngle(0.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
     Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
     Input::onKeyPressed(GLFW_KEY_K, std::bind(&Camera::changeHeight, this, 1));
@@ -70,8 +70,8 @@ void Camera::update3D(){
     horAngle += mouseStep * Input::getMouseOffset().x;
     vertAngle += mouseStep * Input::getMouseOffset().y;
 
-    cout << "angle: " << horAngle << endl;
-    cout << "x: " << getDir2D().x << ", y: " << getDir2D().y << endl; 
+    //cout << "angle: " << horAngle << endl;
+    //cout << "x: " << getDir2D().x << ", y: " << getDir2D().y << endl; 
     vertAngle = min(vertAngle, MAX_VERT_ANGLE);
     vertAngle = max(vertAngle, MIN_VERT_ANGLE);
 
@@ -88,10 +88,10 @@ void Camera::update3D(){
         forMult = -1;
     }
     if(Input::isPressed(GLFW_KEY_A) || Input::isPressed(GLFW_KEY_LEFT)){
-        rightMult = -1;
+        rightMult = 1;
     }
     if(Input::isPressed(GLFW_KEY_D) || Input::isPressed(GLFW_KEY_RIGHT)){
-        rightMult = 1;
+        rightMult = -1;
     }
 
     glm::vec3 step = (forward * forMult + right * rightMult) * stepVal;
@@ -107,14 +107,14 @@ glm::vec3 Camera::getPos3D() const {
 }
 
 glm::vec3 Camera::convert(glm::vec2 degPos, float h) const {
-    float lon = degPos.x;
-    float lat = degPos.y;
+    float lon = glm::radians(degPos.x);
+    float lat = glm::radians(degPos.y);
 	
-	float r = RADIUS + h;
+	float r = RADIUS + h / 100;
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);
-    
+
     return glm::vec3(x,y,z);
 }
 
@@ -123,7 +123,7 @@ glm::vec2 Camera::getDir2D() const {
 }
 
 glm::vec3 Camera::getCenter() const {
-    return convert(pos2D + getDir2D(), height + 1000*vertAngle);
+    return convert(pos2D + getDir2D(), height + vertAngle * 100);
 }
 
 void Camera::changeZoom(int dir){
@@ -151,7 +151,7 @@ void Camera::changeHeight(int dir){
     static const float MIN_HEIGHT = 0.0f;
     static const float MAX_HEIGHT = 5000.0f;
     
-    float step = 500;
+    float step = (MAX_HEIGHT - MIN_HEIGHT) / 10;
     height += dir * step;
     height = max(height, MIN_HEIGHT);
     height = min(height, MAX_HEIGHT);

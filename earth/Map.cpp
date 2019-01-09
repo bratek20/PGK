@@ -44,10 +44,17 @@ void Map::render(bool is2D){
     auto center = cam->getCenterSegment();
     auto size = cam->getViewSize();
     int LOD = getLOD();
-    int segs = 0;
-    unsigned verts = 0;
-    for(int x = -size.first/2; x <= size.first/2; x++){
-        for(int y = -size.second/2; y <= size.second/2; y++){
+    
+    int bx = -size.first/2;
+    int ex = size.first/2;
+    int by = -size.second/2;
+    int ey = size.second/2;
+    if(!is2D){
+        bx = by = -3;
+        ex = ey = 3;
+    }
+    for(int x = bx; x <= ex; x++){
+        for(int y = by; y <= ey; y++){
             auto seg = segments[getKey({x + center.first, y + center.second})];
             if(seg != nullptr){
                 if(is2D){
@@ -56,9 +63,6 @@ void Map::render(bool is2D){
                 else{
                     seg->render(cam->getVPMat(), Camera::RADIUS, LOD);
                 }
-                
-                segs++;
-                verts += MapSegment::getIndexSize(LOD);
             }
         }  
     }
