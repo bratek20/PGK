@@ -15,7 +15,7 @@ using namespace std;
 
 const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 const glm::vec2 Camera::LOCAL_UP_2D = glm::vec2(0,1);
-const float Camera::RADIUS = 6371;//6 371 000;
+const float Camera::RADIUS = 6371;
 
 Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(1000.0f), horAngle(0.0f), vertAngle(0.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
@@ -64,14 +64,12 @@ void Camera::update3D(){
     static const float MOUSE_SPEED = 1;
     float mouseStep = MOUSE_SPEED * Globals::deltaTime;
 
-    static const float MIN_VERT_ANGLE = -89;
-    static const float MAX_VERT_ANGLE = 89;
+    static const float MIN_VERT_ANGLE = -80;
+    static const float MAX_VERT_ANGLE = 30;
 
     horAngle += mouseStep * Input::getMouseOffset().x;
     vertAngle += mouseStep * Input::getMouseOffset().y;
 
-    //cout << "angle: " << horAngle << endl;
-    //cout << "x: " << getDir2D().x << ", y: " << getDir2D().y << endl; 
     vertAngle = min(vertAngle, MAX_VERT_ANGLE);
     vertAngle = max(vertAngle, MIN_VERT_ANGLE);
 
@@ -110,7 +108,7 @@ glm::vec3 Camera::convert(glm::vec2 degPos, float h) const {
     float lon = glm::radians(degPos.x);
     float lat = glm::radians(degPos.y);
 	
-	float r = RADIUS + h / 100;
+	float r = RADIUS + h / 100; // RADIUS is in km, h is in m, makes heights 10 times bigger
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);
@@ -123,7 +121,7 @@ glm::vec2 Camera::getDir2D() const {
 }
 
 glm::vec3 Camera::getCenter() const {
-    return convert(pos2D + getDir2D(), height + vertAngle * 100);
+    return convert(pos2D + getDir2D(), height + 100 * vertAngle);
 }
 
 void Camera::changeZoom(int dir){
@@ -167,8 +165,8 @@ std::pair<int,int> Camera::getCenterSegment(){
     return {floor(pos.x), floor(pos.y)};
 }
 
-std::pair<int,int> Camera::getViewSize(){
-    float width = 2.0f / (zoom * Window::getRatio());
+std::pair<int,int> Camera::getViewSize(float cosY){
+    float width = 2.0f / (zoom * Window::getRatio() * cosY);
     float height = 2.0f / zoom;
     return {ceil(width) + 1, ceil(height) + 1};
 }

@@ -10,6 +10,9 @@
 class Map {
     CameraPtr cam;
     std::unordered_map<std::string, MapSegmentPtr> segments;
+    std::string dataPath;
+    bool lazyLoad;
+    float cosY;
 
 public:   
     Map() {}
@@ -19,8 +22,11 @@ public:
     void render(bool is2D);
 
 private:
+    void initCam(glm::vec2 center);
+    glm::vec2 calcDataCenter();
     std::string getKey(std::pair<int,int> coords) const;
-    int getLOD();
+    MapSegmentPtr createSegment(int w, int l);
+    MapSegmentPtr createEmptySegment(int w, int l);
 };
 
 #endif

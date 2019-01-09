@@ -35,23 +35,22 @@ class MapSegment {
     bool empty;
 
 public:    
+    static MapSegmentPtr create(int w, int l);
     static MapSegmentPtr create(const std::string& fileName, int w, int l);
     ~MapSegment();
 
     static void init(); 
     static void clear();
 
-    static unsigned getIndexSize(int LOD);
-
-    void render(glm::vec2 translate, float scale, int LOD, bool marked);
-    void render(glm::mat4 VPMat, float radius, int LOD);
+    unsigned render(glm::vec2 translate, float scale, int LOD, float ratioMult);
+    unsigned render(glm::mat4 VPMat, float radius, int LOD, float ratioMult);
 
 private:
     MapSegment(const std::vector<short>& heights, int w, int l);
     static void addIndexBuffer(int shift);
     static int lodToIdx(int lod);
 
-    void commonRender(CommonProgram& prog, int LOD, bool marked);
+    unsigned commonRender(CommonProgram& prog, int LOD, float ratioMult);
 };
 
 #endif

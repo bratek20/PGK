@@ -19,8 +19,7 @@ bool initMap(int argc, char* argv[]){
 
 	string dataPath = argv[1];
 	if(argc == 2){
-		cout << "Reading all files in folder does not supported!" << endl;
-		return false;
+		map = Map(dataPath);
 	}
 	else{
 		int wBeg = 0, wEnd = 0, lBeg = 0, lEnd = 0;
@@ -67,7 +66,7 @@ int main(int argc, char* argv[]){
 		map.render(is2D);
 		Window::swapBuffers();
 		
-		Globals::updateTime();
+		Globals::update();
 	}
 
     MapSegment::clear();

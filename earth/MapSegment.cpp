@@ -43,6 +43,11 @@ MapSegment::~MapSegment(){
     }
 }
 
+MapSegmentPtr MapSegment::create(int w, int l){
+    vector<short> heights;
+    return MapSegmentPtr(new MapSegment(heights, w, l));
+}
+
 MapSegmentPtr MapSegment::create(const string& fileName, int w, int l){
     auto heights = DataReader::read(fileName);
     return MapSegmentPtr(new MapSegment(heights, w, l));
@@ -98,31 +103,31 @@ void MapSegment::clear(){
 	glDeleteVertexArrays(1, &vertexArrayIdx);
 }
 
-void MapSegment::render(glm::vec2 translate, float scale, int LOD, bool marked){
+unsigned MapSegment::render(glm::vec2 translate, float scale, int LOD, float ratioMult){
     if(empty){
-        return;
+        return 0;
     }
 
     prog2D.use();
     prog2D.setTranslate(translate);
     prog2D.setScale(scale);
 
-    commonRender(prog2D, LOD, marked);
+    return commonRender(prog2D, LOD, ratioMult);
 }
 
-void MapSegment::render(glm::mat4 VPMat, float radius, int LOD){
+unsigned MapSegment::render(glm::mat4 VPMat, float radius, int LOD, float ratioMult){
     prog3D.use();
     prog3D.setVPMat(VPMat);
     prog3D.setRadius(radius);
     prog3D.setEmpty(empty);
 
-    commonRender(prog3D, LOD, false);
+    return commonRender(prog3D, empty ? 1 : LOD, ratioMult);
 }
 
-void MapSegment::commonRender(CommonProgram& prog, int LOD, bool marked){
+unsigned MapSegment::commonRender(CommonProgram& prog, int LOD, float ratioMult){
     prog.setOffset(offset);
-    prog.setMarked(marked);
-    prog.setRatio(Window::getRatio());
+    prog.setRatio(Window::getRatio() * ratioMult);
+    prog.setMarked(false);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
     glEnableVertexAttribArray(0);
@@ -138,10 +143,7 @@ void MapSegment::commonRender(CommonProgram& prog, int LOD, bool marked){
     int idx = lodToIdx(LOD); 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferIdx[idx]);
     glDrawElements(GL_TRIANGLE_STRIP, indexBufferSizes[idx], GL_UNSIGNED_INT, (void*)0);
-}
-
-unsigned MapSegment::getIndexSize(int LOD){
-    return indexBufferSizes[lodToIdx(LOD)];
+    return indexBufferSizes[idx];
 }
 
 int MapSegment::lodToIdx(int LOD){

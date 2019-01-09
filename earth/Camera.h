@@ -29,7 +29,7 @@ public:
 
     float getZoom() const;
     std::pair<int,int> getCenterSegment();
-    std::pair<int,int> getViewSize();
+    std::pair<int,int> getViewSize(float cosY);
 
     glm::mat4 getVPMat();
 
