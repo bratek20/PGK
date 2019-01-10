@@ -111,15 +111,16 @@ unsigned MapSegment::render(glm::vec2 translate, float scale, int LOD, float rat
     prog2D.use();
     prog2D.setTranslate(translate);
     prog2D.setScale(scale);
-
+    prog2D.setEmpty(false);
     return commonRender(prog2D, LOD, ratioMult);
 }
 
-unsigned MapSegment::render(glm::mat4 VPMat, float radius, int LOD, float ratioMult){
+unsigned MapSegment::render(glm::mat4 VPMat, float radius, int LOD, float ratioMult, float heightScale){
     prog3D.use();
     prog3D.setVPMat(VPMat);
     prog3D.setRadius(radius);
     prog3D.setEmpty(empty);
+    prog3D.setHeightScale(heightScale);
 
     return commonRender(prog3D, empty ? 1 : LOD, ratioMult);
 }

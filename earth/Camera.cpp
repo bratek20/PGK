@@ -17,11 +17,14 @@ const glm::vec3 Camera::LOCAL_UP = glm::vec3(0,1,0);
 const glm::vec2 Camera::LOCAL_UP_2D = glm::vec2(0,1);
 const float Camera::RADIUS = 6371;
 
-Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), height(1000.0f), horAngle(0.0f), vertAngle(0.0f) {
+Camera::Camera(glm::vec2 initPos) : pos2D(initPos), zoom(1.0f), 
+    height(1000.0f), horAngle(0.0f), vertAngle(0.0f), heightScale(5.0f) {
     Input::onKeyPressed(GLFW_KEY_O, std::bind(&Camera::changeZoom, this, 1));
     Input::onKeyPressed(GLFW_KEY_P, std::bind(&Camera::changeZoom, this, -1));
     Input::onKeyPressed(GLFW_KEY_K, std::bind(&Camera::changeHeight, this, 1));
     Input::onKeyPressed(GLFW_KEY_L, std::bind(&Camera::changeHeight, this, -1));
+    Input::onKeyPressed(GLFW_KEY_N, std::bind(&Camera::scaleHeight, this, 1));
+    Input::onKeyPressed(GLFW_KEY_M, std::bind(&Camera::scaleHeight, this, -1));
 }
 
 CameraPtr Camera::create(glm::vec2 initPos){
@@ -108,7 +111,7 @@ glm::vec3 Camera::convert(glm::vec2 degPos, float h) const {
     float lon = glm::radians(degPos.x);
     float lat = glm::radians(degPos.y);
 	
-	float r = RADIUS + h / 100; // RADIUS is in km, h is in m, makes heights 10 times bigger
+	float r = RADIUS + h * heightScale / 1000; // RADIUS is in km, h is in m
 	float x = r*cos(lat)*cos(lon);
 	float y = r*cos(lat)*sin(lon);
 	float z = r*sin(lat);
@@ -121,7 +124,7 @@ glm::vec2 Camera::getDir2D() const {
 }
 
 glm::vec3 Camera::getCenter() const {
-    return convert(pos2D + getDir2D(), height + 100 * vertAngle);
+    return convert(pos2D + getDir2D(), height + 100 * vertAngle * (10 / heightScale));
 }
 
 void Camera::changeZoom(int dir){
@@ -156,6 +159,17 @@ void Camera::changeHeight(int dir){
     cout << "Height: " << height << endl;
 }
 
+void Camera::scaleHeight(int dir){
+    static const float MIN_SCALE_HEIGHT = 1.0f;
+    static const float MAX_SCALE_HEIGHT = 10.0f;
+    
+    float step = 1.0f;
+    heightScale += dir * step;
+    heightScale = max(heightScale, MIN_SCALE_HEIGHT);
+    heightScale = min(heightScale, MAX_SCALE_HEIGHT);
+    cout << "Height scale: " << heightScale << endl;
+}
+
 float Camera::getZoom() const {
     return zoom;
 }
@@ -175,6 +189,10 @@ glm::mat4 Camera::getVPMat(){
     return getProjectionMat() * getViewMat();
 }
 
+float Camera::getHeightScale() const {
+    return heightScale;
+}
+
 glm::mat4 Camera::getViewMat(){
     return glm::lookAt(
                 getPos3D(), // the position of your camera, in world space
@@ -188,7 +206,7 @@ glm::mat4 Camera::getProjectionMat(){
     return glm::perspective(
                 glm::radians(fov), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
                 Window::getRatio(),       // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
-                0.1f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
-                100000.0f             // Far clipping plane. Keep as little as possible.
+                0.01f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
+                1000.0f             // Far clipping plane. Keep as little as possible.
             );
 }

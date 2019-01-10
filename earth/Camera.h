@@ -16,6 +16,7 @@ class Camera {
     float height;
     float horAngle;
     float vertAngle;
+    float heightScale;
 
 public:
     static const float RADIUS;
@@ -32,6 +33,7 @@ public:
     std::pair<int,int> getViewSize(float cosY);
 
     glm::mat4 getVPMat();
+    float getHeightScale() const;
 
 private:
     Camera(glm::vec2 initPos);
@@ -41,6 +43,7 @@ private:
     
     void changeZoom(int dir);
     void changeHeight(int dir);
+    void scaleHeight(int dir);
 
     glm::vec2 getDir2D() const;
     glm::vec3 getCenter() const;

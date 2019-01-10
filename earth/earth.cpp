@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
 	if(!initMap(argc, argv)){
 		return 1;
 	}	
-	Input::onKeyPressed(GLFW_KEY_M, changeRenderType);
+	Input::onKeyPressed(GLFW_KEY_V, changeRenderType);
 
 	while(!Window::shouldClose()){
 		Input::handle();

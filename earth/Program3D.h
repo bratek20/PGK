@@ -7,7 +7,7 @@
 class Program3D : public CommonProgram {
     GLuint VPMatId;
     GLuint radiusId;
-    GLuint emptyId;
+    GLuint heightScaleId;
 
 public:
     Program3D(){}
@@ -15,7 +15,7 @@ public:
 
     void setVPMat(glm::mat4 VPMat);
     void setRadius(float radius);
-    void setEmpty(bool empty);
+    void setHeightScale(float scale);
 };
 
 #endif

@@ -63,7 +63,7 @@ void Map::render(bool is2D){
             if(is2D){
                 Globals::renderedVertices += seg->render(-cam->getPos2D() * cam->getZoom(), cam->getZoom(), LOD, cosY);            }
             else{
-                Globals::renderedVertices += seg->render(cam->getVPMat(), Camera::RADIUS, LOD, cosY);
+                Globals::renderedVertices += seg->render(cam->getVPMat(), Camera::RADIUS, LOD, cosY, cam->getHeightScale());
             }
         }  
     }

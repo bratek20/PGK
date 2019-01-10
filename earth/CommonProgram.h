@@ -9,6 +9,7 @@ class CommonProgram : public ShaderProgram {
     GLuint offsetId;
     GLuint ratioId;
     GLuint markedId;
+    GLuint emptyId;
 
 public:
     CommonProgram(){}
@@ -17,6 +18,7 @@ public:
     void setOffset(glm::vec2 offset);
     void setRatio(float ratio);
     void setMarked(bool marked);
+    void setEmpty(bool empty);
 };
 
 #endif

@@ -43,7 +43,7 @@ public:
     static void clear();
 
     unsigned render(glm::vec2 translate, float scale, int LOD, float ratioMult);
-    unsigned render(glm::mat4 VPMat, float radius, int LOD, float ratioMult);
+    unsigned render(glm::mat4 VPMat, float radius, int LOD, float ratioMult, float heightScale);
 
 private:
     MapSegment(const std::vector<short>& heights, int w, int l);
