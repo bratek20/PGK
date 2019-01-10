@@ -27,10 +27,10 @@ void main(){
 	float ht = height;
 	if(Empty == 1)
 		vsColor = vec3(0.5f, 0.5f, 0.5f);
-	else if(ht < 0)   
-		vsColor = vec3(0, 0, 1); //blue
+	else if(ht <= 0)   
+		vsColor = vec3(0, 0, 1 + ht/10); //blue
 	else if (ht < 500)   
-		vsColor = vec3(0, ht/500, 0); //->green
+		vsColor = vec3(0, 0.25f + ht/500 * 0.75f, 0); //->green
 	else if (ht < 1000)  
 		vsColor = vec3(ht/500-1, 1, 0); //->yellow
 	else if (ht < 2000)  

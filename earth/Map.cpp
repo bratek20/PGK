@@ -12,6 +12,10 @@ Map::Map(const string& dataPath) : dataPath(dataPath), lazyLoad(true){
     initCam(calcDataCenter());
 }
 
+Map::Map(const std::string& dataPath, int wStart, int lStart) : dataPath(dataPath), lazyLoad(true){
+    initCam({lStart, wStart});
+}
+
 Map::Map(const string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd) : dataPath(dataPath), lazyLoad(false){
     for(int w = wBeg; w < wEnd; w++){
         for(int l = lBeg; l < lEnd; l++){

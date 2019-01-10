@@ -11,7 +11,7 @@ vector<short> DataReader::read(string fileName)
     short value;
     vector<short> values;
     if(input.fail()){
-        //cout << "Read failed for file " << fileName << endl;
+        cout << "Read failed for file " << fileName << endl;
         return values;
     }
     //cout << "Reading: " << fileName << endl;

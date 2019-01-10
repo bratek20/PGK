@@ -23,6 +23,8 @@ bool initMap(int argc, char* argv[]){
 	}
 	else{
 		int wBeg = 0, wEnd = 0, lBeg = 0, lEnd = 0;
+		int wStart = 0, lStart = 0;
+		bool setStartPos = false;
 		int idx = 2;
 		while(idx < argc){
 			string arg = string(argv[idx]); 
@@ -34,9 +36,21 @@ bool initMap(int argc, char* argv[]){
 				lBeg = atoi(argv[idx+1]);
 				lEnd = atoi(argv[idx+2]);
 			}
+			else if(arg == "-sp"){
+				wStart = atoi(argv[idx+1]);
+				lStart = atoi(argv[idx+2]);
+				setStartPos = true;
+			}
 			idx += 3;
 		}
-		map = Map(dataPath, wBeg, wEnd, lBeg, lEnd); 
+		
+		if(setStartPos){
+			map = Map(dataPath, wStart, lStart);
+		}
+		else{
+			map = Map(dataPath, wBeg, wEnd, lBeg, lEnd);
+		}
+		 
 	}
 	return true;
 }

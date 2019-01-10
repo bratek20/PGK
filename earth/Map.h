@@ -17,8 +17,9 @@ class Map {
 public:   
     Map() {}
     Map(const std::string& dataPath);
+    Map(const std::string& dataPath, int wStart, int lStart);
     Map(const std::string& dataPath, int wBeg, int wEnd, int lBeg, int lEnd);
-    
+
     void render(bool is2D);
 
 private:
