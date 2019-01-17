@@ -46,7 +46,7 @@ void changeCameraSetting(){
 
 float zoomValue = 1;
 void zoomCamera(){
-	
+
 	if(cameraSetting == 1){ // third person
 		scene->getCamera()->setPosition(thirdPersonCamPos * zoomValue);
 	}
@@ -72,7 +72,7 @@ void resetGame(bool won){
 		points += aquarium->getPoints();
 	}
 	cout << "Prev| Level: " << level << ", points: " << points << endl;
-	
+
 	shouldReset = true;
 	level = won ? level + 1 : 1;
 	points = won ? points : 0;
@@ -85,25 +85,26 @@ void initGame(){
 
 	aquarium = Aquarium::create(WIDTH, HEIGHT, DEPTH, level, [](ActorPtr){resetGame(false);});
 	scene->addChilds({player, aquarium});
-	
+
 	cameraSetting = 0;
 	changeCameraSetting();
 }
 
 int main(){
-    if(!Window::open()){
+    if(!Window::open("Aquarium")){
         return -1;
     }
 	Input::init();
-    Mesh::init();
+    Mesh::init();file:///home/i291481/Dokumenty/PGK/aquarium/Window.cpp
+
 	Globals::init();
-	
+
 	Input::onKeyPressed(GLFW_KEY_TAB, changeCameraSetting);
 	Input::onKeyPressed(GLFW_KEY_O, zoomIn);
 	Input::onKeyPressed(GLFW_KEY_P, zoomOut);
 
 	resetGame(false);
-	
+
 	while(!Window::shouldClose()){
 		if(shouldReset){
 			initGame();
@@ -118,7 +119,7 @@ int main(){
 		Mesh::applyPlayerPosition(player->getWorldPosition());
 		scene->render();
 		Window::swapBuffers();
-		
+
 		Globals::updateTime();
 	}
 

@@ -3,6 +3,12 @@
 #include "Light.h"
 
 #include <common/shader.hpp>
+#include <common/shader.hpp>
+#include <common/texture.hpp>
+//#include <common/controls.hpp>
+#include <common/objloader.hpp>
+#include <common/vboindexer.hpp>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include <iostream>
@@ -135,12 +141,14 @@ MeshPtr Mesh::create(Shape shape, Color color){
 }
 
 void Mesh::init(){
+    glEnable(GL_DEPTH_TEST);
+
     auto sphereMesh = SphereGenerator::generate(30, 30, 0.5f);
     SPHERE = {108, sphereMesh.size(), GL_TRIANGLES};
     vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
     vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
 
-    programId =  LoadShaders( "aquarium.vs", "aquarium.fs" ); 
+    programId =  LoadShaders( "aquarium.vs", "aquarium.fs" );
     glUseProgram(programId);
 
     MVPId = glGetUniformLocation(programId, "MVP");
@@ -174,6 +182,36 @@ void Mesh::init(){
 
     setProjectionMat(glm::mat4(1.0f));
     setViewMat(glm::mat4(1.0f));
+
+    /*
+    	GLuint Texture = loadDDS("uvmap.DDS");
+
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+
+	// Read our .obj file
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	bool res = loadOBJ("suzanne.obj", vertices, uvs, normals);
+
+	// Load it into a VBO
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+    */
 }
 
 void Mesh::clear(){
@@ -198,7 +236,7 @@ void Mesh::setViewMat(const glm::mat4& mat){
 
 void Mesh::addLight(LightPtr light){
     lights.push_back(light);
-   
+
 }
 
 void Mesh::applyLights(){
@@ -207,14 +245,14 @@ void Mesh::applyLights(){
         lights.end());
 
     int size = min(static_cast<int>(lights.size()), MAX_LIGHTS);
-    glUniform1i(lightsNumId, size); 
+    glUniform1i(lightsNumId, size);
 
     glm::vec3 pos[size];
     float power[size];
     glm::vec3 color[size];
     glm::vec3 coefficient[size];
     for(int i=0;i<size;i++){
-        auto light = lights[i].lock(); 
+        auto light = lights[i].lock();
         pos[i] = light->getWorldPosition();
         power[i] = light->getPower();
         color[i] = static_cast<glm::vec3>(light->getColor());
@@ -228,7 +266,7 @@ void Mesh::applyLights(){
 }
 
 void Mesh::applyPlayerPosition(glm::vec3 worldPlayerPos){
-    glUniform3f(playerPositionId, worldPlayerPos.x, worldPlayerPos.y, worldPlayerPos.z); 
+    glUniform3f(playerPositionId, worldPlayerPos.x, worldPlayerPos.y, worldPlayerPos.z);
 }
 
 void Mesh::render(const glm::mat4& worldMat){
@@ -245,7 +283,7 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
     applyCommonUniforms(worldMat);
     glUniform1i(isInstancedId, 1);
     glUniform1i(reverseNormalId, meshes[0]->hasNormalsReversed ? 1 : 0);
-    
+
     auto shape = meshes[0]->shape;
     applyShape(shape);
 
@@ -280,40 +318,40 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
     glBindBuffer(GL_ARRAY_BUFFER, instancedVertexTransIdx);
     glEnableVertexAttribArray(2);
 	glVertexAttribPointer(
-        2,                               
-        3,                                       
-        GL_FLOAT,                        
-        GL_FALSE,                        
-        0,                               
-        (void*)0                      
+        2,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)0
     );
 
     glBindBuffer(GL_ARRAY_BUFFER, instancedVertexScaleIdx);
     glEnableVertexAttribArray(3);
 	glVertexAttribPointer(
-        3,                               
-        3,                                       
-        GL_FLOAT,                        
-        GL_FALSE,                        
-        0,                               
-        (void*)0                      
+        3,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)0
     );
 
     glBindBuffer(GL_ARRAY_BUFFER, instancedVertexColorIdx);
     glEnableVertexAttribArray(4);
 	glVertexAttribPointer(
-        4,                               
-        3,                                       
-        GL_FLOAT,                        
-        GL_FALSE,                        
-        0,                               
-        (void*)0                      
+        4,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)0
     );
- 
+
     glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1); 
-    glVertexAttribDivisor(4, 1);   
-    
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+
     glDrawArraysInstanced(shape.type,  0, shape.size, meshes.size());
 }
 
@@ -327,22 +365,22 @@ void Mesh::applyShape(const Shape& shape){
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
     glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
-        0,                               
-        3,                                       
-        GL_FLOAT,                        
-        GL_FALSE,                        
-        0,                               
-        (void*)(shape.off * sizeof(GLfloat))                      
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)(shape.off * sizeof(GLfloat))
     );
     glBindBuffer(GL_ARRAY_BUFFER, vertexNormalsBufferIdx);
     glEnableVertexAttribArray(1);
 	glVertexAttribPointer(
-        1,                               
-        3,                                       
-        GL_FLOAT,                        
-        GL_FALSE,                        
-        0,                               
-        (void*)(shape.off * sizeof(GLfloat))                      
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)(shape.off * sizeof(GLfloat))
     );
 }
 
