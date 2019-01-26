@@ -1,6 +1,7 @@
 #include "Aquarium.h"
 #include "Globals.h"
 #include "Bubble.h"
+#include "Assets.h"
 
 #include <algorithm>
 
@@ -16,7 +17,7 @@ Aquarium::Aquarium() : Actor(nullptr) {
 }
 
 ActorPtr Aquarium::makeWall(float width, float height, float depth, int dx, int dz){
-	auto wall = Actor::create(Mesh::create(Mesh::CUBE, Colors::BLUE));
+	auto wall = Actor::create(Mesh::create(Assets::CUBE, Colors::BLUE));
     if(dx != 0){
         wall->setScale({1, height, depth});
     }
@@ -36,7 +37,7 @@ AquariumPtr Aquarium::create(float width, float height, float depth, int level, 
     aquarium->level = level;
     aquarium->endGameCallback = endGameCallback;
 
-    auto floor = Actor::create(Mesh::create(Mesh::CUBE, Colors::SAND));
+    auto floor = Actor::create(Mesh::create(Assets::CUBE, Colors::SAND));
 	floor->setScale({width, 1, depth});
     floor->move({0, -0.5f, 0});
 	
@@ -99,6 +100,4 @@ void Aquarium::spawnBubble(){
         bubbles->addChild(bubble);
         bubble->setOnCollide(endGameCallback);
     }
-    
-    addChild(bubble);
 }

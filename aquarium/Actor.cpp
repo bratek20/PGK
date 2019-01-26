@@ -2,9 +2,9 @@
 #include "Collider.h"
 #include <algorithm>
 #include <iostream>
-#include<glm/glm.hpp>
-#include<glm/gtc/quaternion.hpp>
-#include<glm/common.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/common.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 using namespace std;

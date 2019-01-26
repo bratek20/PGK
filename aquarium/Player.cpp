@@ -2,11 +2,12 @@
 #include "Input.h"
 #include "Globals.h"
 #include "Light.h"
+#include "Assets.h"
 
 #include <algorithm>
 using namespace std;
 
-Player::Player() : Actor(Mesh::create(Mesh::CUBE, Colors::RED)) {
+Player::Player() : Actor(Mesh::create(Assets::OBJ, Colors::RED)) {
 }
 
 PlayerPtr Player::create(float aqWidth, float aqHeight, float aqDepth, Callback winGameCallback){

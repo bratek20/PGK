@@ -2,8 +2,9 @@
 #include "Globals.h"
 #include "Color.h"
 #include "Light.h"
+#include "Assets.h"
 
-Bubble::Bubble() : Actor(Mesh::create(Mesh::SPHERE, Color::random())) {
+Bubble::Bubble() : Actor(Mesh::create(Assets::SPHERE, Color::random())) {
 }
 
 BubblePtr Bubble::create(float x, float y, float z, float scale, bool isShining){

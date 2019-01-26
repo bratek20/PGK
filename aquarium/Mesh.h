@@ -9,7 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "CommonProgram.h"
+#include "Program3D.h"
+#include "Shape.h"
 #include "Color.h"
 
 class Mesh;
@@ -19,32 +20,19 @@ class Light;
 using LightPtr = std::shared_ptr<Light>;
 using WeakLightPtr = std::weak_ptr<Light>;
 
-class Mesh {
-    struct Shape{
-        int off;
-        int size;
-        int type;
-    };
-
-    static CommonProgram program;
-    static GLuint vertexArrayIdx;
-    static GLuint vertexBufferIdx;
-    static GLuint vertexNormalsBufferIdx;
+class Mesh {   
+    static Program3D program;
     static GLuint instancedVertexTransIdx;
     static GLuint instancedVertexScaleIdx;
     static GLuint instancedVertexColorIdx;
-    static std::vector<GLfloat> vertexData;
-    static std::vector<GLfloat> vertexNormalsData;
 
-    Shape shape;
+    ShapePtr shape;
     Color color;
+    GLuint renderType;
     bool hasNormalsReversed = false;
 
 public:
-    static Shape CUBE;
-    static Shape SPHERE;
-    
-    static MeshPtr create(Shape shape, Color color);
+    static MeshPtr create(ShapePtr shape, Color color, GLuint renderType = GL_TRIANGLES);
 
     static void init(); 
     static void clear();
@@ -58,7 +46,7 @@ public:
 
     void render(const glm::mat4& worldMat);
     static void renderInstanced(const glm::mat4& worldMat, std::vector<MeshPtr> meshes, std::vector<glm::vec3> translations, std::vector<glm::vec3> scales);
-    std::vector<glm::vec3> getLocalCoords() const;
+    const std::vector<glm::vec3>& getLocalCoords() const;
     std::vector<glm::vec3> getWorldCoords(const glm::mat4& worldMat) const;
     
     void reverseNormals();
@@ -68,7 +56,6 @@ private:
     Mesh(){}
 
     static void applyCommonUniforms(const glm::mat4& worldMat);
-    static void applyShape(const Shape& shape);
 };
 
 #endif

@@ -15,132 +15,23 @@
 
 using namespace std;
 
-CommonProgram Mesh::program;
-GLuint Mesh::vertexArrayIdx;
-GLuint Mesh::vertexBufferIdx;
-GLuint Mesh::vertexNormalsBufferIdx;
+Program3D Mesh::program;
 GLuint Mesh::instancedVertexTransIdx;
 GLuint Mesh::instancedVertexScaleIdx;
 GLuint Mesh::instancedVertexColorIdx;
 
-std::vector<GLfloat> Mesh::vertexData = {
-    -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-
-    -0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-
-    -0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f, -0.5f,
-    0.5f, -0.5f,  0.5f,
-    0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f, -0.5f, -0.5f,
-
-    -0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f, -0.5f,
-    0.5f,  0.5f,  0.5f,
-    0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-};
-
-std::vector<GLfloat> Mesh::vertexNormalsData = {
-    0.0f,  0.0f, -1.0f,
-    0.0f,  0.0f, -1.0f,
-    0.0f,  0.0f, -1.0f,
-    0.0f,  0.0f, -1.0f,
-    -0.0f,  0.0f, -1.0f,
-    0.0f,  0.0f, -1.0f,
-
-    0.0f,  0.0f,  1.0f,
-    0.0f,  0.0f,  1.0f,
-    0.0f,  0.0f,  1.0f,
-    0.0f,  0.0f,  1.0f,
-    -0.0f,  0.0f,  1.0f,
-    0.0f,  0.0f,  1.0f,
-
-    -1.0f,  0.0f,  0.0f,
-    -1.0f,  0.0f,  0.0f,
-    -1.0f,  0.0f,  0.0f,
-    -1.0f,  0.0f,  0.0f,
-    -1.0f,  0.0f,  0.0f,
-    -1.0f,  0.0f,  0.0f,
-
-    1.0f,  0.0f,  0.0f,
-    1.0f,  0.0f,  0.0f,
-    1.0f,  0.0f,  0.0f,
-    1.0f,  0.0f,  0.0f,
-    1.0f,  0.0f,  0.0f,
-    1.0f,  0.0f,  0.0f,
-
-    0.0f, -1.0f,  0.0f,
-    0.0f, -1.0f,  0.0f,
-    0.0f, -1.0f,  0.0f,
-    0.0f, -1.0f,  0.0f,
-    0.0f, -1.0f,  0.0f,
-    0.0f, -1.0f,  0.0f,
-
-    -0.0f,  1.0f,  0.0f,
-    0.0f,  1.0f,  0.0f,
-    0.0f,  1.0f,  0.0f,
-    0.0f,  1.0f,  0.0f,
-    -0.0f,  1.0f,  0.0f,
-    -0.0f,  1.0f,  0.0f
-};
-
-Mesh::Shape Mesh::CUBE = { 0, 108, GL_TRIANGLES };
-Mesh::Shape Mesh::SPHERE;
-
-MeshPtr Mesh::create(Shape shape, Color color){
+MeshPtr Mesh::create(ShapePtr shape, Color color, GLuint renderType){
     auto mesh = MeshPtr(new Mesh());
     mesh->shape = shape;
     mesh->color = color;
+    mesh->renderType = renderType;
     return mesh;
 }
 
 void Mesh::init(){
     glEnable(GL_DEPTH_TEST);
 
-    auto sphereMesh = SphereGenerator::generate(30, 30, 0.5f);
-    SPHERE = {108, sphereMesh.size(), GL_TRIANGLES};
-    vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
-    vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
-
-    program =  CommonProgram( "aquarium.vs", "aquarium.fs" );
-
-    glGenVertexArrays(1, &vertexArrayIdx);
-	glBindVertexArray(vertexArrayIdx);
-
-	glGenBuffers(1, &vertexBufferIdx);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexData.size(), vertexData.data(), GL_STATIC_DRAW);
-
-    glGenBuffers(1, &vertexNormalsBufferIdx);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexNormalsBufferIdx);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexData.size(), vertexData.data(), GL_STATIC_DRAW);
+    program = Program3D("Program3D.vs", "Program3D.fs");
 
     glGenBuffers(1, &instancedVertexTransIdx);
     glGenBuffers(1, &instancedVertexScaleIdx);
@@ -148,47 +39,13 @@ void Mesh::init(){
 
     setProjectionMat(glm::mat4(1.0f));
     setViewMat(glm::mat4(1.0f));
-
-    /*
-    	GLuint Texture = loadDDS("uvmap.DDS");
-
-	// Get a handle for our "myTextureSampler" uniform
-	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
-
-	// Read our .obj file
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals;
-	bool res = loadOBJ("suzanne.obj", vertices, uvs, normals);
-
-	// Load it into a VBO
-
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-
-	GLuint normalbuffer;
-	glGenBuffers(1, &normalbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
-    */
 }
 
 void Mesh::clear(){
-    glDisableVertexAttribArray(0);
     glDeleteBuffers(1, &instancedVertexTransIdx);
     glDeleteBuffers(1, &instancedVertexScaleIdx);
 	glDeleteBuffers(1, &instancedVertexColorIdx);
-    glDeleteBuffers(1, &vertexNormalsBufferIdx);
-	glDeleteBuffers(1, &vertexBufferIdx);
 	program.clear();
-    glDeleteVertexArrays(1, &vertexArrayIdx);
 }
 
 void Mesh::setProjectionMat(const glm::mat4& mat){
@@ -217,8 +74,8 @@ void Mesh::render(const glm::mat4& worldMat){
     program.applyNormalsReversed(hasNormalsReversed);
     program.applyColor(color);
 
-    applyShape(shape);
-    glDrawArrays(shape.type, 0, shape.size);
+    shape->apply();
+    glDrawArrays(renderType, 0, shape->verticesNum());
 }
 
 void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, vector<glm::vec3> translations, vector<glm::vec3> scales){
@@ -227,13 +84,13 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
     program.applyNormalsReversed(meshes[0]->hasNormalsReversed);
 
     auto shape = meshes[0]->shape;
-    applyShape(shape);
+    shape->apply();
 
     GLfloat instancedTrans[meshes.size() * 3];
     GLfloat instancedScale[meshes.size() * 3];
     GLfloat instancedColor[meshes.size() * 3];
 
-    for(int i=0;i<meshes.size();i++){
+    for(unsigned i=0;i<meshes.size();i++){
         instancedTrans[3*i] = translations[i].x;
         instancedTrans[3*i+1] = translations[i].y;
         instancedTrans[3*i+2] = translations[i].z;
@@ -294,42 +151,15 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
 
-    glDrawArraysInstanced(shape.type,  0, shape.size, meshes.size());
+    glDrawArraysInstanced(meshes[0]->renderType,  0, shape->verticesNum(), meshes.size());
 }
 
 void Mesh::applyCommonUniforms(const glm::mat4& worldMat){
     program.applyWorldMat(worldMat);
 }
 
-void Mesh::applyShape(const Shape& shape){
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferIdx);
-    glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (void*)(shape.off * sizeof(GLfloat))
-    );
-    glBindBuffer(GL_ARRAY_BUFFER, vertexNormalsBufferIdx);
-    glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (void*)(shape.off * sizeof(GLfloat))
-    );
-}
-
-std::vector<glm::vec3> Mesh::getLocalCoords() const{
-    std::vector<glm::vec3> localCoords;
-    for(int i=0;i<shape.size/3;i++){
-        localCoords.push_back(glm::vec3(vertexData[shape.off + 3*i], vertexData[shape.off + 3*i+1],  vertexData[shape.off + 3*i+2]));
-    }
-    return localCoords;
+const std::vector<glm::vec3>& Mesh::getLocalCoords() const{
+    return shape->getVertices();
 }
 
 std::vector<glm::vec3> Mesh::getWorldCoords(const glm::mat4& worldMat) const{
