@@ -6,6 +6,7 @@
 
 class Light;
 using LightPtr = std::shared_ptr<Light>;
+using WeakLightPtr = std::weak_ptr<Light>;
 
 class Light : public Actor {
     float power;

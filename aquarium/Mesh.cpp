@@ -15,31 +15,13 @@
 
 using namespace std;
 
-GLuint Mesh::MVPId;
-GLuint Mesh::viewMatId;
-GLuint Mesh::worldMatId;
-GLuint Mesh::meshColorId;
-GLuint Mesh::reverseNormalId;
-GLuint Mesh::isInstancedId;
-
-GLuint Mesh::playerPositionId;
-GLuint Mesh::lightsNumId;
-GLuint Mesh::lightPosId;
-GLuint Mesh::lightPowerId;
-GLuint Mesh::lightColorId;
-GLuint Mesh::lightCoefficientsId;
-
-GLuint Mesh::programId;
+CommonProgram Mesh::program;
 GLuint Mesh::vertexArrayIdx;
 GLuint Mesh::vertexBufferIdx;
 GLuint Mesh::vertexNormalsBufferIdx;
 GLuint Mesh::instancedVertexTransIdx;
 GLuint Mesh::instancedVertexScaleIdx;
 GLuint Mesh::instancedVertexColorIdx;
-
-glm::mat4 Mesh::projectionMat;
-glm::mat4 Mesh::viewMat;
-std::vector<WeakLightPtr> Mesh::lights;
 
 std::vector<GLfloat> Mesh::vertexData = {
     -0.5f, -0.5f, -0.5f,
@@ -131,7 +113,6 @@ std::vector<GLfloat> Mesh::vertexNormalsData = {
 
 Mesh::Shape Mesh::CUBE = { 0, 108, GL_TRIANGLES };
 Mesh::Shape Mesh::SPHERE;
-const int Mesh::MAX_LIGHTS = 10;
 
 MeshPtr Mesh::create(Shape shape, Color color){
     auto mesh = MeshPtr(new Mesh());
@@ -148,22 +129,7 @@ void Mesh::init(){
     vertexData.insert(vertexData.end(), sphereMesh.begin(), sphereMesh.end());
     vertexNormalsData.insert(vertexNormalsData.end(), sphereMesh.begin(), sphereMesh.end());
 
-    programId =  LoadShaders( "aquarium.vs", "aquarium.fs" );
-    glUseProgram(programId);
-
-    MVPId = glGetUniformLocation(programId, "MVP");
-    viewMatId = glGetUniformLocation(programId, "V");
-	worldMatId = glGetUniformLocation(programId, "M");
-    meshColorId = glGetUniformLocation(programId, "MeshColor");
-    reverseNormalId = glGetUniformLocation(programId, "ReverseNormal");
-    isInstancedId = glGetUniformLocation(programId, "IsInstanced");
-
-    playerPositionId = glGetUniformLocation(programId, "PlayerPosition_worldspace");
-    lightsNumId = glGetUniformLocation(programId, "LightsNum");
-    lightPosId = glGetUniformLocation(programId, "LightPosition_worldspace");
-    lightPowerId = glGetUniformLocation(programId, "LightPower");
-    lightColorId = glGetUniformLocation(programId, "LightColor");
-    lightCoefficientsId = glGetUniformLocation(programId, "LightDistanceCoefficients");
+    program =  CommonProgram( "aquarium.vs", "aquarium.fs" );
 
     glGenVertexArrays(1, &vertexArrayIdx);
 	glBindVertexArray(vertexArrayIdx);
@@ -221,59 +187,35 @@ void Mesh::clear(){
 	glDeleteBuffers(1, &instancedVertexColorIdx);
     glDeleteBuffers(1, &vertexNormalsBufferIdx);
 	glDeleteBuffers(1, &vertexBufferIdx);
-	glDeleteProgram(programId);
-	glDeleteVertexArrays(1, &vertexArrayIdx);
+	program.clear();
+    glDeleteVertexArrays(1, &vertexArrayIdx);
 }
 
 void Mesh::setProjectionMat(const glm::mat4& mat){
-    projectionMat = mat;
+    program.setProjectionMat(mat);
 }
 
 void Mesh::setViewMat(const glm::mat4& mat){
-    glUniformMatrix4fv(viewMatId, 1, GL_FALSE, &mat[0][0]);
-    viewMat = mat;
+    program.setViewMat(mat);
 }
 
 void Mesh::addLight(LightPtr light){
-    lights.push_back(light);
-
+    program.addLight(light);
 }
 
 void Mesh::applyLights(){
-    lights.erase(
-        std::remove_if(lights.begin(), lights.end(), [](WeakLightPtr l){return l.expired();}),
-        lights.end());
-
-    int size = min(static_cast<int>(lights.size()), MAX_LIGHTS);
-    glUniform1i(lightsNumId, size);
-
-    glm::vec3 pos[size];
-    float power[size];
-    glm::vec3 color[size];
-    glm::vec3 coefficient[size];
-    for(int i=0;i<size;i++){
-        auto light = lights[i].lock();
-        pos[i] = light->getWorldPosition();
-        power[i] = light->getPower();
-        color[i] = static_cast<glm::vec3>(light->getColor());
-        coefficient[i] = light->getCoefficients();
-    }
-
-    glUniform3fv(lightPosId, size, glm::value_ptr(pos[0]));
-    glUniform1fv(lightPowerId, size, power);
-    glUniform3fv(lightColorId, size, glm::value_ptr(color[0]));
-    glUniform3fv(lightCoefficientsId, size, glm::value_ptr(coefficient[0]));
+    program.applyLights();
 }
 
 void Mesh::applyPlayerPosition(glm::vec3 worldPlayerPos){
-    glUniform3f(playerPositionId, worldPlayerPos.x, worldPlayerPos.y, worldPlayerPos.z);
+    program.applyPlayerPosition(worldPlayerPos);
 }
 
 void Mesh::render(const glm::mat4& worldMat){
     applyCommonUniforms(worldMat);
-    glUniform1i(reverseNormalId, hasNormalsReversed ? 1 : 0);
-    glUniform1i(isInstancedId, 0);
-    color.apply(meshColorId);
+    program.applyInstanced(false);
+    program.applyNormalsReversed(hasNormalsReversed);
+    program.applyColor(color);
 
     applyShape(shape);
     glDrawArrays(shape.type, 0, shape.size);
@@ -281,8 +223,8 @@ void Mesh::render(const glm::mat4& worldMat){
 
 void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, vector<glm::vec3> translations, vector<glm::vec3> scales){
     applyCommonUniforms(worldMat);
-    glUniform1i(isInstancedId, 1);
-    glUniform1i(reverseNormalId, meshes[0]->hasNormalsReversed ? 1 : 0);
+    program.applyInstanced(true);
+    program.applyNormalsReversed(meshes[0]->hasNormalsReversed);
 
     auto shape = meshes[0]->shape;
     applyShape(shape);
@@ -356,9 +298,7 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
 }
 
 void Mesh::applyCommonUniforms(const glm::mat4& worldMat){
-    glm::mat4 MVP = projectionMat * viewMat * worldMat;
-    glUniformMatrix4fv(worldMatId, 1, GL_FALSE, &worldMat[0][0]);
-    glUniformMatrix4fv(MVPId, 1, GL_FALSE, &MVP[0][0]);
+    program.applyWorldMat(worldMat);
 }
 
 void Mesh::applyShape(const Shape& shape){

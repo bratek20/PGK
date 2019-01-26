@@ -19,8 +19,6 @@ struct Color
         return {r, g, b};
     }
 
-    void apply(GLuint uniformId);
-
     static Color random();
 };
 
