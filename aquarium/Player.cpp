@@ -18,7 +18,6 @@ PlayerPtr Player::create(float aqWidth, float aqHeight, float aqDepth, Callback 
     player->setPosition({0, aqHeight/2, -aqDepth/2 * 0.85f});
 
     auto light = Light::create(5, Colors::RED, {0, 1, 0});
-    //light->move({0, 0, 2});
     player->addChild(light);
 
     return player;

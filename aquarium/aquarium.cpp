@@ -95,7 +95,7 @@ int main(){
         return -1;
     }
 	Input::init();
-    Mesh::init();file:///home/i291481/Dokumenty/PGK/aquarium/Window.cpp
+    Mesh::init();
 
 	Globals::init();
 
