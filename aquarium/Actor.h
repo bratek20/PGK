@@ -35,6 +35,7 @@ public:
     void addChilds(std::vector<ActorPtr> childs);
 
     int childsNum() const;
+    std::vector<ActorPtr> getChilds() const;
     
     void setPosition(glm::vec3 position);
     void setScale(glm::vec3 scale);

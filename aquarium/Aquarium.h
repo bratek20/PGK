@@ -12,6 +12,7 @@ class Aquarium : public Actor {
     static const int MAX_SHINING_BUBBLES;
     static const float BUBBLE_SPAWN_TIME;
     static const float SHINING_BUBBLE_SPAWN_CHANCE;
+    static const float BUBBLE_MIN_SIZE;
     static const float BUBBLE_MAX_SIZE;
     static const int POINTS_PER_BUBBLE;
 
@@ -39,6 +40,7 @@ protected:
 private:
     static ActorPtr makeWall(float width, float height, float depth, int dx, int dz);
     void spawnBubble();
+    void destroyBubbles(ActorPtr bubbleParent);
 
 };
 #endif

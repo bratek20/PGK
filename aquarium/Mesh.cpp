@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "SphereGenerator.h"
 #include "Light.h"
+#include "Assets.h"
 
 #include <common/shader.hpp>
 #include <common/shader.hpp>
@@ -20,10 +21,11 @@ GLuint Mesh::instancedVertexTransIdx;
 GLuint Mesh::instancedVertexScaleIdx;
 GLuint Mesh::instancedVertexColorIdx;
 
-MeshPtr Mesh::create(ShapePtr shape, Color color, GLuint renderType){
+MeshPtr Mesh::create(ShapePtr shape, Color color, GLuint texture, GLuint renderType){
     auto mesh = MeshPtr(new Mesh());
     mesh->shape = shape;
     mesh->color = color;
+    mesh->texture = texture;
     mesh->renderType = renderType;
     return mesh;
 }
@@ -73,6 +75,7 @@ void Mesh::render(const glm::mat4& worldMat){
     program.applyInstanced(false);
     program.applyNormalsReversed(hasNormalsReversed);
     program.applyColor(color);
+    program.applyTexture(texture);
 
     shape->apply();
     glDrawArrays(renderType, 0, shape->verticesNum());
@@ -81,10 +84,12 @@ void Mesh::render(const glm::mat4& worldMat){
 void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, vector<glm::vec3> translations, vector<glm::vec3> scales){
     applyCommonUniforms(worldMat);
     program.applyInstanced(true);
-    program.applyNormalsReversed(meshes[0]->hasNormalsReversed);
 
-    auto shape = meshes[0]->shape;
+    auto mesh = meshes[0];
+    auto shape = mesh->shape;
     shape->apply();
+    program.applyNormalsReversed(mesh->hasNormalsReversed);
+    program.applyTexture(mesh->texture);
 
     GLfloat instancedTrans[meshes.size() * 3];
     GLfloat instancedScale[meshes.size() * 3];
@@ -115,17 +120,6 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
 	glBufferData(GL_ARRAY_BUFFER, sizeof(instancedColor), instancedColor, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, instancedVertexTransIdx);
-    glEnableVertexAttribArray(2);
-	glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        0,
-        (void*)0
-    );
-
-    glBindBuffer(GL_ARRAY_BUFFER, instancedVertexScaleIdx);
     glEnableVertexAttribArray(3);
 	glVertexAttribPointer(
         3,
@@ -136,7 +130,7 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
         (void*)0
     );
 
-    glBindBuffer(GL_ARRAY_BUFFER, instancedVertexColorIdx);
+    glBindBuffer(GL_ARRAY_BUFFER, instancedVertexScaleIdx);
     glEnableVertexAttribArray(4);
 	glVertexAttribPointer(
         4,
@@ -147,11 +141,22 @@ void Mesh::renderInstanced(const glm::mat4& worldMat, vector<MeshPtr> meshes, ve
         (void*)0
     );
 
-    glVertexAttribDivisor(2, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, instancedVertexColorIdx);
+    glEnableVertexAttribArray(5);
+	glVertexAttribPointer(
+        5,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)0
+    );
+
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
 
-    glDrawArraysInstanced(meshes[0]->renderType,  0, shape->verticesNum(), meshes.size());
+    glDrawArraysInstanced(mesh->renderType,  0, shape->verticesNum(), meshes.size());
 }
 
 void Mesh::applyCommonUniforms(const glm::mat4& worldMat){

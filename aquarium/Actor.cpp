@@ -93,6 +93,10 @@ int Actor::childsNum() const{
     return childs.size();
 }
 
+std::vector<ActorPtr> Actor::getChilds() const{
+    return childs;
+}
+
 void Actor::setPosition(glm::vec3 position){
     this->position = position;
 }

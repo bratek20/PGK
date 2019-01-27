@@ -4,7 +4,7 @@
 #include "Light.h"
 #include "Assets.h"
 
-Bubble::Bubble() : Actor(Mesh::create(Assets::SPHERE, Color::random())) {
+Bubble::Bubble() : Actor(Mesh::create(Assets::SPHERE, Color::random(), Assets::WHITE_TEXTURE)) {
 }
 
 BubblePtr Bubble::create(float x, float y, float z, float scale, bool isShining){

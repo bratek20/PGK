@@ -10,14 +10,15 @@ const int Aquarium::BUBLES_PER_LEVEL = 20;
 const int Aquarium::MAX_SHINING_BUBBLES = 5;
 const float Aquarium::BUBBLE_SPAWN_TIME = 0.2f;
 const float Aquarium::SHINING_BUBBLE_SPAWN_CHANCE = 0.1f;
-const float Aquarium::BUBBLE_MAX_SIZE = 2.5f;
+const float Aquarium::BUBBLE_MIN_SIZE = 1.0f;
+const float Aquarium::BUBBLE_MAX_SIZE = 2.0f;
 const int Aquarium::POINTS_PER_BUBBLE = 10;
 
 Aquarium::Aquarium() : Actor(nullptr) {
 }
 
 ActorPtr Aquarium::makeWall(float width, float height, float depth, int dx, int dz){
-	auto wall = Actor::create(Mesh::create(Assets::CUBE, Colors::BLUE));
+	auto wall = Actor::create(Mesh::create(Assets::CUBE, Colors::BLUE, Assets::WHITE_TEXTURE));
     if(dx != 0){
         wall->setScale({1, height, depth});
     }
@@ -25,7 +26,7 @@ ActorPtr Aquarium::makeWall(float width, float height, float depth, int dx, int 
         wall->setScale({width, height, 1});
     }
 
-	wall->move({width/2 * dx, height/2, depth/2*dz});
+	wall->move({width/2 * dx, height/2, depth/2 * dz});
 	return wall;
 }
 
@@ -37,7 +38,7 @@ AquariumPtr Aquarium::create(float width, float height, float depth, int level, 
     aquarium->level = level;
     aquarium->endGameCallback = endGameCallback;
 
-    auto floor = Actor::create(Mesh::create(Assets::CUBE, Colors::SAND));
+    auto floor = Actor::create(Mesh::create(Assets::CUBE, Colors::SAND, Assets::WHITE_TEXTURE));
 	floor->setScale({width, 1, depth});
     floor->move({0, -0.5f, 0});
 	
@@ -67,7 +68,12 @@ void Aquarium::onUpdate(){
         time = 0.0f;
     }
 
-    for(auto child : childs){
+    destroyBubbles(bubbles);
+    destroyBubbles(shiningBubbles);
+}
+
+void Aquarium::destroyBubbles(ActorPtr bubbleParent){
+    for(auto child : bubbleParent->getChilds()){
         if(child->getLocalPosition().y > height){
             child->destroy();
         }
@@ -85,7 +91,7 @@ int Aquarium::getPoints() const{
 void Aquarium::spawnBubble(){
     auto random = Globals::random;
     bool isShining = random(0, 1) < SHINING_BUBBLE_SPAWN_CHANCE && shiningBubbles->childsNum() < MAX_SHINING_BUBBLES;
-    auto bubble = Bubble::create(random(-width/2 + 2, width/2 - 2), 0, random(-depth/2 + 2, depth/2 - 2), random(1, BUBBLE_MAX_SIZE), isShining);
+    auto bubble = Bubble::create(random(-width/2 + 2, width/2 - 2), 0, random(-depth/2 + 2, depth/2 - 2), random(BUBBLE_MIN_SIZE, BUBBLE_MAX_SIZE), isShining);
     if(isShining){
         bubble->setOnCollide([this](ActorPtr a){
                 if(a->isDestroyed()){

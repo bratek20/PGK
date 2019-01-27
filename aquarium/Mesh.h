@@ -28,11 +28,12 @@ class Mesh {
 
     ShapePtr shape;
     Color color;
+    GLuint texture;
     GLuint renderType;
     bool hasNormalsReversed = false;
 
 public:
-    static MeshPtr create(ShapePtr shape, Color color, GLuint renderType = GL_TRIANGLES);
+    static MeshPtr create(ShapePtr shape, Color color, GLuint texture, GLuint renderType = GL_TRIANGLES);
 
     static void init(); 
     static void clear();

@@ -7,7 +7,7 @@
 #include <algorithm>
 using namespace std;
 
-Player::Player() : Actor(Mesh::create(Assets::OBJ, Colors::RED)) {
+Player::Player() : Actor(Mesh::create(Assets::OBJ, Colors::WHITE, Assets::TEXTURE)) {
 }
 
 PlayerPtr Player::create(float aqWidth, float aqHeight, float aqDepth, Callback winGameCallback){
