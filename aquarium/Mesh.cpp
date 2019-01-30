@@ -34,7 +34,8 @@ void Mesh::init(){
     glEnable(GL_DEPTH_TEST);
 
     program = Program3D("Program3D.vs", "Program3D.fs");
-
+    program.applyNoiseTexture(Assets::NOISE_TEXTURE);
+    
     glGenBuffers(1, &instancedVertexTransIdx);
     glGenBuffers(1, &instancedVertexScaleIdx);
     glGenBuffers(1, &instancedVertexColorIdx);

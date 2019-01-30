@@ -18,7 +18,7 @@ Aquarium::Aquarium() : Actor(nullptr) {
 }
 
 ActorPtr Aquarium::makeWall(float width, float height, float depth, int dx, int dz){
-	auto wall = Actor::create(Mesh::create(Assets::CUBE, Colors::BLUE, Assets::WHITE_TEXTURE));
+	auto wall = Actor::create(Mesh::create(Assets::CUBE, Colors::BLUE, Assets::GLASS_TEXTURE));
     if(dx != 0){
         wall->setScale({1, height, depth});
     }
